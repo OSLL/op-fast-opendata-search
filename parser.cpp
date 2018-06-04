@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "culturalobject.h"
 
 /*
 This function turns every straight line to the secondary array of values like name, address etc.
@@ -77,7 +78,7 @@ bool parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 (double)goalArrayOfFields[long_place],
                 goalArrayOfFields[name_place]); //call the constructor of CulturalObject
             objects[readFrom].setAddress(goalArrayOfFields[address_place]);
-            objects[readFrom].setDecription(goalArrayOfFields[description_place]);
+            objects[readFrom].setDescription(goalArrayOfFields[description_place]);
             objects[readFrom].setHistRef(goalArrayOfFields[histRef_place]);
             readFrom++;
         }
