@@ -1,5 +1,4 @@
 #include <string>
-#define string std::string
 
 class Point {
     double latitude;
@@ -13,12 +12,12 @@ class Point {
 class CulturalObject {
     unsigned id;
     Point coordinates;
-    string name;
-    string address;
-    string description;
-    string histRef;
+    std::string name;
+    std::string address;
+    std::string description;
+    std::string histRef;
     public:
-        CulturalObject (unsigned id_, double lat_, double long_, string name_) : 
+        CulturalObject (unsigned id_, double lat_, double long_, std::string name_) : 
             name(name_), id(id_) {
                 coordinates = Point(lat_, long_);
                 address = "";
@@ -27,11 +26,11 @@ class CulturalObject {
             }
         double getLatitude() const {return coordinates.getLatitude();}
         double getLongitude() const {return coordinates.getLongitude();}
-        string getName() const {return name;}
-        string getAddress() const {return address;}
-        string getDescription() const {return description;}
-        string getHistRef() const {return histRef;}
-        void setAddress(string addr) {address = addr;}
-        void setDescription(string dscr) {description = dscr;}
-        void setHistRef(string hstrf) {histRef = hstrf;}
+        std::string getName() const {return name;}
+        std::string getAddress() const {return address;}
+        std::string getDescription() const {return description;}
+        std::string getHistRef() const {return histRef;}
+        void setAddress(std::string addr) {address = addr;}
+        void setDescription(std::string dscr) {description = dscr;}
+        void setHistRef(std::string hstrf) {histRef = hstrf;}
 };
