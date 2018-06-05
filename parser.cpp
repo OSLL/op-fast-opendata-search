@@ -40,7 +40,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         as a type - id, name or whatever else
         */
         std::string firstLine;
-        ifstr.getline(firstLine);
+        getline(ifstr, firstLine);
         unsigned lineSize = 1;
         for (int i = 0; i < firstLine.size(); i++) {
             if (firstLine[i] = ',')
@@ -70,11 +70,11 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         */
         std::string goalLine;
         for (unsigned i = 0; i < readFrom; i++)
-            ifstr.getline(goalLine); //skip unnecessary lines
-        while (readFrom < readTo && goalLine != EOF) {
+            getline(ifstr, goalLine); //skip unnecessary lines
+        while (readFrom < readTo) {
             std::string goalArrayOfFields[lineSize];
             while (!ifstr.eof())
-            ifstr.getline(goalLine);
+            getline(ifstr, goalLine);
             readLineToArray(goalLine, goalArrayOfFields, lineSize);
             objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
                 std::stod(goalArrayOfFields[lat_place]),
