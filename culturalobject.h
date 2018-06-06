@@ -18,6 +18,7 @@ class CulturalObject {
     std::string description;
     std::string histRef;
     public:
+        CulturalObject() {}
         CulturalObject (unsigned id_, double lat_, double long_, std::string name_) : 
             name(name_), id(id_) {
                 coordinates = Point(lat_, long_);
