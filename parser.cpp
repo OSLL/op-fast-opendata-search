@@ -91,8 +91,15 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         }
         std::cout << (id_place && name_place && address_place && lat_place && long_place
             && description_place && histRef_place); //debug
-        if (id_place && name_place && address_place && lat_place && long_place
-            && description_place && histRef_place) {
+        std::cout << id_place << " id_place\n";//debug
+        std::cout << name_place << " name_place\n";//debug
+        std::cout << address_place << " address_place\n";//debug
+        std::cout << lat_place << " lat_place\n";//debug
+        std::cout << long_place << " long_place\n";//debug
+        std::cout << description_place << " description_place\n";//debug
+        std::cout << histRef_place << " histRef_place\n";//debug
+        if (!(name_place && address_place && lat_place && long_place
+            && description_place && histRef_place)) {
             delete [] arrayOfFields;
             return; //receive file with incorrect fields, need flag or try/catch in this place
         }
@@ -102,25 +109,31 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         deserealization of csv - file
         */
         std::string goalLine;
-        for (unsigned i = 0; i < readFrom; i++)
+        //goalLine.resize(3500);//harcoded size
+        for (unsigned i = 0; i < readFrom; i++) {
+            ifstr.sync();
             getline(ifstr, goalLine); //skip unnecessary lines
-        while (readFrom < readTo) {
+        }
+        std::cout << "\nReaded unnecessary line is "<< goalLine << '\n'; //debug
+        while (readFrom <= readTo) {
             std::string * goalArrayOfFields;
             goalArrayOfFields = new std::string[lineSize]; //Should I delete it later?
-            while (!ifstr.eof())
-            getline(ifstr, goalLine);
-            std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
-            readLineToArray(goalLine, goalArrayOfFields, lineSize, 700);//maxsize hardcoded
-            objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
-                std::stod(goalArrayOfFields[lat_place]),
-                std::stod(goalArrayOfFields[long_place]),
-                goalArrayOfFields[name_place]); //call the constructor of CulturalObject
-            objects[readFrom].setAddress(goalArrayOfFields[address_place]);
-            std::cout << goalArrayOfFields[address_place] << " test\n"; //debug 
-            objects[readFrom].setDescription(goalArrayOfFields[description_place]);
-            objects[readFrom].setHistRef(goalArrayOfFields[histRef_place]);
-            readFrom++;
-            delete [] goalArrayOfFields;
+            while (!ifstr.eof()) {
+                ifstr.sync();
+                getline(ifstr, goalLine);
+                std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
+                readLineToArray(goalLine, goalArrayOfFields, lineSize, 700);//maxsize hardcoded
+                objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
+                    std::stod(goalArrayOfFields[lat_place]),
+                    std::stod(goalArrayOfFields[long_place]),
+                    goalArrayOfFields[name_place]); //call the constructor of CulturalObject
+                objects[readFrom].setAddress(goalArrayOfFields[address_place]);
+                std::cout << goalArrayOfFields[address_place] << " test\n"; //debug 
+                objects[readFrom].setDescription(goalArrayOfFields[description_place]);
+                objects[readFrom].setHistRef(goalArrayOfFields[histRef_place]);
+                readFrom++;
+                delete [] goalArrayOfFields;
+            }
         }
     }
 }
