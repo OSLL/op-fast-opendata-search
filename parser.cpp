@@ -19,6 +19,7 @@ void readLineToArray (std::string & line, std::string * array, unsigned size, un
     //std::cout << "in read to array" << line << " Line.size() = " << line.size() <<'\n'; //debug
     for (int j = 0, i = 0; j < line.size() && i < size; j++) {
         if (line[j] == ',') {
+            temp.resize(tempcounter);
             array[i] = temp;
             tempcounter = 0;
             temp.clear();
@@ -51,7 +52,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         */
         std::string firstLine;
         getline(ifstr, firstLine);
-        std::cout << firstLine << "\nfirstLine\n"; //debug
+        //std::cout << firstLine << "\nfirstLine\n"; //debug
         unsigned lineSize = 1;
         for (int i = 0; i < firstLine.size(); i++) {
             if (firstLine[i] == ',')
@@ -62,7 +63,8 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         arrayOfFields = new std::string [lineSize];
         readLineToArray (firstLine, arrayOfFields, lineSize, lineSize);
         for (unsigned i = 0; i < lineSize; i++) {
-            std::cout << arrayOfFields[i] << "\nin cycle \'for\'\n";//debug
+            //std::cout << arrayOfFields[i] << "\nin cycle \'for\', \n";//debug
+            //std::cout << arrayOfFields[i].compare("oid") << '\n';
             if (arrayOfFields[i].compare("oid") == 0) {
                 id_place = i;
             }
@@ -74,11 +76,11 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
             }
             else if (arrayOfFields[i].compare("coord_shirota") == 0) {
                 lat_place = i;
-                std::cout << arrayOfFields[i] << "this is shirota\n";//debug
+                //std::cout << arrayOfFields[i] << "this is shirota\n";//debug
             }
             else if (arrayOfFields[i].compare("coord_dolgota") == 0) {
                 long_place = i;
-                std::cout << arrayOfFields[i] << "this is dolgota\n";//debug
+                //std::cout << arrayOfFields[i] << "this is dolgota\n";//debug
             }
             else if (arrayOfFields[i].compare("description") == 0) {
                 description_place = i;
@@ -87,11 +89,14 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 histRef_place = i;
             }
         }
-        if (!(id_place && name_place && address_place && lat_place && long_place
-            && description_place && histRef_place)) {
+        std::cout << (id_place && name_place && address_place && lat_place && long_place
+            && description_place && histRef_place); //debug
+        if (id_place && name_place && address_place && lat_place && long_place
+            && description_place && histRef_place) {
             delete [] arrayOfFields;
             return; //receive file with incorrect fields, need flag or try/catch in this place
         }
+        delete [] arrayOfFields;
         /*
         now we know indexes of all necessary values and can make
         deserealization of csv - file
@@ -104,6 +109,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
             goalArrayOfFields = new std::string[lineSize]; //Should I delete it later?
             while (!ifstr.eof())
             getline(ifstr, goalLine);
+            std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
             readLineToArray(goalLine, goalArrayOfFields, lineSize, 700);//maxsize hardcoded
             objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
                 std::stod(goalArrayOfFields[lat_place]),
@@ -116,6 +122,5 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
             readFrom++;
             delete [] goalArrayOfFields;
         }
-       delete [] arrayOfFields;
     }
 }
