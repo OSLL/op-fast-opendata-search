@@ -16,9 +16,18 @@ void readLineToArray (std::string & line, std::string * array, unsigned size, un
     std::string temp;
     temp.resize(maxSize);
     unsigned tempcounter = 0;
+    bool outline = true;
     //std::cout << "in read to array" << line << " Line.size() = " << line.size() <<'\n'; //debug
     for (int j = 0, i = 0; j < line.size() && i < size; j++) {
-        if (line[j] == ',') {
+        if (line[j] == '\"' && outline) {
+            outline = false;
+            continue;
+        }
+        if (line[j] == '\"' && !outline) {
+            outline = true;
+            continue;
+        }
+        if (line[j] == ',' && outline) {
             temp.resize(tempcounter);
             array[i] = temp;
             tempcounter = 0;
@@ -123,6 +132,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 getline(ifstr, goalLine);
                 std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
                 readLineToArray(goalLine, goalArrayOfFields, lineSize, 700);//maxsize hardcoded
+                std::cout << goalArrayOfFields[lat_place] << ": This is latitude\n";//debug
                 objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
                     std::stod(goalArrayOfFields[lat_place]),
                     std::stod(goalArrayOfFields[long_place]),
