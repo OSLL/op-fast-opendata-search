@@ -9,14 +9,25 @@ this file or not
 #include "culturalobject.h"
 #include "parser.h" 
 
-void doLogic(std::ifstream & in) {}
+void doTest(std::ifstream & in) {
+    CulturalObject * array;
+    array = new CulturalObject [5];
+    parser(in, array, 0, 2);
+    std::cout << array[1].getDescription() << ' ' << array[1].getAddress();
+    delete[] array;
+}
+
+void doLogic(std::ifstream & in) {
+    doTest(in);
+}
 
 int main(int argc, char* argv[]) {
-    setlocale(LC_ALL,"Russian");
+    //setlocale(LC_ALL,"Russian");
     char* filename = argv[1];
     std::ifstream in(filename);
     if (in.is_open()) {
         doLogic(in);
+        in.close();
         return 0;
     }
     else {
