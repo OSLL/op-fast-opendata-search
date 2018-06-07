@@ -12,18 +12,23 @@ Array contains only sequence of "c-style strings", without any reference to Cult
 /* in line below function receive first parameter as reference to string and 
 the second as a reference to array of strings (at least I tried to do this)*/
 
-void readLineToArray (std::string & line, std::string * array, unsigned size, unsigned maxSize) {
+bool readLineToArray (std::string & line, std::string * array, unsigned size, unsigned maxSize,
+                      bool wasOutline) {
     std::string temp;
     temp.resize(maxSize);
     unsigned tempcounter = 0;
     bool outline = true;
     //std::cout << "in read to array" << line << " Line.size() = " << line.size() <<'\n'; //debug
     for (int j = 0, i = 0; j < line.size() && i < size; j++) {
-        if (line[j] == '\"' && outline) {
+        if (line[j] == '\"' && outline && !wasOutline) {
             outline = false;
             continue;
         }
         if (line[j] == '\"' && !outline) {
+            outline = true;
+            continue;
+        }
+        if (line[j] == '\"' && wasOutline) {
             outline = true;
             continue;
         }
@@ -37,12 +42,10 @@ void readLineToArray (std::string & line, std::string * array, unsigned size, un
         }
         else {
             temp.at(tempcounter) = line[j];
-            //if (j%10 == 0)//debug
-                //std::cout << temp[tempcounter] << ' ' << line[j] << tempcounter << '\n';//debug 
             tempcounter++;
-            //std::cout << temp << '\n'; //debug
         } 
     }
+    return outline; //if outline, string readed successfully, or we need to add information in it
 }
          
 
@@ -70,7 +73,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         std::cout << "lineSize = " << lineSize << '\n'; //debug
         std::string * arrayOfFields;
         arrayOfFields = new std::string [lineSize];
-        readLineToArray (firstLine, arrayOfFields, lineSize, lineSize);
+        readLineToArray (firstLine, arrayOfFields, lineSize, lineSize, false);
         for (unsigned i = 0; i < lineSize; i++) {
             //std::cout << arrayOfFields[i] << "\nin cycle \'for\', \n";//debug
             //std::cout << arrayOfFields[i].compare("oid") << '\n';
@@ -98,15 +101,6 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 histRef_place = i;
             }
         }
-        std::cout << (id_place && name_place && address_place && lat_place && long_place
-            && description_place && histRef_place); //debug
-        std::cout << id_place << " id_place\n";//debug
-        std::cout << name_place << " name_place\n";//debug
-        std::cout << address_place << " address_place\n";//debug
-        std::cout << lat_place << " lat_place\n";//debug
-        std::cout << long_place << " long_place\n";//debug
-        std::cout << description_place << " description_place\n";//debug
-        std::cout << histRef_place << " histRef_place\n";//debug
         if (!(name_place && address_place && lat_place && long_place
             && description_place && histRef_place)) {
             delete [] arrayOfFields;
@@ -118,7 +112,6 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         deserealization of csv - file
         */
         std::string goalLine;
-        //goalLine.resize(3500);//harcoded size
         for (unsigned i = 0; i < readFrom; i++) {
             ifstr.sync();
             getline(ifstr, goalLine); //skip unnecessary lines
@@ -131,7 +124,23 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 ifstr.sync();
                 getline(ifstr, goalLine);
                 std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
-                readLineToArray(goalLine, goalArrayOfFields, lineSize, 700);//maxsize hardcoded
+                
+                std::string backupLine = goalLine;
+                /* if line readed patrially, rewrite backupLine and call
+                read to array function with the full string 
+                */
+                if (!(readLineToArray(backupLine, goalArrayOfFields, lineSize, 700, false))) {
+                    ifstr.sync();
+                    getline(ifstr, goalLine);
+                    backupLine.append(goalLine);
+                    //maxsize hardcoded below, please fix it
+                    while (!(readLineToArray(backupLine,
+                          goalArrayOfFields, lineSize, 700, true))) {
+                        ifstr.sync();
+                        getline(ifstr, goalLine);
+                        backupLine.append(goalLine);
+                    }
+                }   
                 std::cout << goalArrayOfFields[lat_place] << ": This is latitude\n";//debug
                 objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
                     std::stod(goalArrayOfFields[lat_place]),
