@@ -7,6 +7,7 @@ this file or not
 #include <iostream>
 #include <fstream>
 #include "culturalobject.h"
+#include "parser.h" 
 
 void doLogic(std::ifstream & in) {}
 

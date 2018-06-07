@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include "culturalobject.h"
+#include "parser.h"
 
 /*
 This function turns every straight line to the secondary array of values like name, address etc.
