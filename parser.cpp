@@ -17,19 +17,30 @@ bool readLineToArray (std::string & line, std::string * array, unsigned size) {
     temp.resize(line.size());
     unsigned tempcounter = 0;
     bool outline = true;
-    for (int j = 0, i = 0; j < line.size() && i < size; j++) {//here is the bug - cannot read last element (Tax ID)
-        if (line[j] == '\"' && outline) {
+    //unsigned position_of_quotes = 0;
+    for (int j = 0, i = 0; (line[j] != '\n') && j < line.size(); j++) {//here is the bug - cannot read last element (Tax ID or whatever)
+        if (line[j] == '\"' && outline) { //it was {j < line.size() && i < size}
             outline = false;
-            //std::cout << "I am outline now\n"; //debug
+            //position_of_quotes = j;
+            std::cout << "I am outline now, j = " << j << "\n"; //debug
             continue;
         }
         if (line[j] == '\"' && !outline) {
-            //std::cout << "Back to line\n"; //debug
-            outline = true;
+            //std::cout << "j = " << j <<", (j - position_of_quotes) = " << (j - position_of_quotes) << '\n';//debug 
+            //if ((j - position_of_quotes) == 1) {//if we have 2 quotes symbol in a row
+            //    temp.at(tempcounter) = line[j];
+            //    tempcounter++;
+            //    std::cout << "I am in j - position\n";//debug
+            //}
+            //else {
+                outline = true;//we must went off only if there aren't two quotes in a row
+                std::cout << "Back to the line \n";//debug
+            //}
+            //position_of_quotes = 0;
             continue;
         }
         if (line[j] == ',' && outline) {
-            //std::cout << temp << " this is readed line\n"; //debug
+            std::cout << temp << " this is readed line\n"; //debug
             temp.resize(tempcounter);
             array[i] = temp;
             tempcounter = 0;
@@ -42,7 +53,12 @@ bool readLineToArray (std::string & line, std::string * array, unsigned size) {
             tempcounter++;
         } 
     }
-    //std::cout << "exit from function, return to the parser\n";//debug
+    //write the last element
+    std::cout << temp << "This is last line\n"; //debug
+    temp.resize(tempcounter);
+    array[size - 1] = temp;
+    std::cout << "exit from function, return to the parser\n";//debug
+    std::cout << "outline = " << outline << '\n';//debug
     return outline; //if outline, string readed successfully, or we need to add information in it
 }
          
@@ -73,6 +89,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         for (unsigned i = 0; i < lineSize; i++) {
             if (arrayOfFields[i].compare("oid") == 0) {
                 id_place = i;
+                std::cout << "id_place = " << id_place << '\n';//debug
             }
             else if (arrayOfFields[i].compare("name") == 0) {
                 name_place = i;
@@ -88,6 +105,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
             }
             else if (arrayOfFields[i].compare("description") == 0) {
                 description_place = i;
+                std::cout << "description_place =" << description_place;//debug
             }
             else if (arrayOfFields[i].compare("obj_history") == 0) {
                 histRef_place = i;
@@ -105,47 +123,34 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         deserialization of csv-file
         */
 
-        std::string goalLine;
+        std::string tempLine;
         for (unsigned i = 0; i < readFrom; i++) {
             ifstr.sync();
-            getline(ifstr, goalLine); //skip unnecessary lines
+            getline(ifstr, tempLine); //skip unnecessary lines
         }
-        //std::cout << "\nReaded unnecessary line is "<< goalLine << '\n'; //debug
-        while (readFrom <= readTo) {
-            std::string * goalArrayOfFields;
-            goalArrayOfFields = new std::string[lineSize]; //Should I delete it later?
-            while (!ifstr.eof()) {
+        std::string * goalArrayOfFields;
+        goalArrayOfFields = new std::string[lineSize]; //Should I delete it later?
+        while (readFrom < readTo && !ifstr.eof()) {
+           ifstr.sync();
+           getline(ifstr, tempLine);
+           std::string goalLine = tempLine;
+           /* if line readed patrially, add old line to backupLine and call
+           read to array function with the full string 
+           */
+           while (!(readLineToArray(goalLine, goalArrayOfFields, lineSize))) { 
                 ifstr.sync();
-                getline(ifstr, goalLine);
-                //std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
-                std::string backupLine = goalLine;
-                //std::cout << "backupLine is " << backupLine << '\n'; //debug
-                /* if line readed patrially, add old line to backupLine and call
-                read to array function with the full string 
-                */
-                //int reservedSize = 3000;
-                while (!(readLineToArray(backupLine, goalArrayOfFields,//maxSize will be 10 times
-                      lineSize))) {//greater than avrg line size 
-                    ifstr.sync();
-                    getline(ifstr, goalLine);
-                    //std::cout << goalLine << " goalLine\n";//debug
-                    //backupLine.resize(reservedSize);
-                    backupLine.append(goalLine);
-                    //std::cout << backupLine << " backupLine\n";//debug
-                    //reservedline hardcoded higher, please fix it
-                }   
-                //std::cout << goalArrayOfFields[lat_place] << ": This is latitude\n";//debug
-                objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
+                getline(ifstr, tempLine);
+                goalLine.append(tempLine);
+           }   
+           objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
                     std::stod(goalArrayOfFields[lat_place]),
                     std::stod(goalArrayOfFields[long_place]),
                     goalArrayOfFields[name_place]); //call the constructor of CulturalObject
-                objects[readFrom].setAddress(goalArrayOfFields[address_place]);
-                //std::cout << goalArrayOfFields[address_place] << " test\n"; //debug 
-                objects[readFrom].setDescription(goalArrayOfFields[description_place]);
-                objects[readFrom].setHistRef(goalArrayOfFields[histRef_place]);
-                readFrom++;
-            }
-            delete [] goalArrayOfFields;
+            objects[readFrom].setAddress(goalArrayOfFields[address_place]);
+            objects[readFrom].setDescription(goalArrayOfFields[description_place]);
+            objects[readFrom].setHistRef(goalArrayOfFields[histRef_place]);
+            readFrom++;
         }
+            delete [] goalArrayOfFields;
     }
 }
