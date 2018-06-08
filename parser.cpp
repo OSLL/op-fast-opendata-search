@@ -12,27 +12,24 @@ Array contains only sequence of "c-style strings", without any reference to Cult
 /* in line below function receive first parameter as reference to string and 
 the second as a reference to array of strings (at least I tried to do this)*/
 
-bool readLineToArray (std::string & line, std::string * array, unsigned size, unsigned maxSize,
-                      bool wasOutline) {
+bool readLineToArray (std::string & line, std::string * array, unsigned size, unsigned maxSize) {
     std::string temp;
     temp.resize(maxSize);
     unsigned tempcounter = 0;
     bool outline = true;
-    //std::cout << "in read to array" << line << " Line.size() = " << line.size() <<'\n'; //debug
     for (int j = 0, i = 0; j < line.size() && i < size; j++) {
-        if (line[j] == '\"' && outline && !wasOutline) {
+        if (line[j] == '\"' && outline) {
             outline = false;
+            std::cout << "I am outline now\n"; //debug
             continue;
         }
         if (line[j] == '\"' && !outline) {
-            outline = true;
-            continue;
-        }
-        if (line[j] == '\"' && wasOutline) {
+            std::cout << "Back to line\n"; //debug
             outline = true;
             continue;
         }
         if (line[j] == ',' && outline) {
+            std::cout << temp << " this is readed line\n"; //debug
             temp.resize(tempcounter);
             array[i] = temp;
             tempcounter = 0;
@@ -45,6 +42,7 @@ bool readLineToArray (std::string & line, std::string * array, unsigned size, un
             tempcounter++;
         } 
     }
+    std::cout << "exit from function, return to the parser\n";//debug
     return outline; //if outline, string readed successfully, or we need to add information in it
 }
          
@@ -64,19 +62,15 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         */
         std::string firstLine;
         getline(ifstr, firstLine);
-        //std::cout << firstLine << "\nfirstLine\n"; //debug
         unsigned lineSize = 1;
         for (int i = 0; i < firstLine.size(); i++) {
             if (firstLine[i] == ',')
                 lineSize++;
         }
-        std::cout << "lineSize = " << lineSize << '\n'; //debug
         std::string * arrayOfFields;
         arrayOfFields = new std::string [lineSize];
-        readLineToArray (firstLine, arrayOfFields, lineSize, lineSize, false);
+        readLineToArray (firstLine, arrayOfFields, lineSize, lineSize);
         for (unsigned i = 0; i < lineSize; i++) {
-            //std::cout << arrayOfFields[i] << "\nin cycle \'for\', \n";//debug
-            //std::cout << arrayOfFields[i].compare("oid") << '\n';
             if (arrayOfFields[i].compare("oid") == 0) {
                 id_place = i;
             }
@@ -88,11 +82,9 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
             }
             else if (arrayOfFields[i].compare("coord_shirota") == 0) {
                 lat_place = i;
-                //std::cout << arrayOfFields[i] << "this is shirota\n";//debug
             }
             else if (arrayOfFields[i].compare("coord_dolgota") == 0) {
                 long_place = i;
-                //std::cout << arrayOfFields[i] << "this is dolgota\n";//debug
             }
             else if (arrayOfFields[i].compare("description") == 0) {
                 description_place = i;
@@ -107,10 +99,12 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
             return; //receive file with incorrect fields, need flag or try/catch in this place
         }
         delete [] arrayOfFields;
+        
         /*
         now we know indexes of all necessary values and can make
-        deserealization of csv - file
+        deserialization of csv-file
         */
+
         std::string goalLine;
         for (unsigned i = 0; i < readFrom; i++) {
             ifstr.sync();
@@ -124,22 +118,21 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 ifstr.sync();
                 getline(ifstr, goalLine);
                 std::cout << "\nReaded line is "<< goalLine << '\n'; //debug
-                
                 std::string backupLine = goalLine;
-                /* if line readed patrially, rewrite backupLine and call
+                std::cout << "backupLine is " << backupLine << '\n'; //debug
+                /* if line readed patrially, add old line to backupLine and call
                 read to array function with the full string 
                 */
-                if (!(readLineToArray(backupLine, goalArrayOfFields, lineSize, 700, false))) {
+                int reservedSize = 3000;
+                while (!(readLineToArray(backupLine, goalArrayOfFields,//maxSize will be 10 times
+                      lineSize, (backupLine.size()/lineSize*10)))) {//greater than avrg line size 
                     ifstr.sync();
                     getline(ifstr, goalLine);
+                    std::cout << goalLine << " goalLine\n";//debug
+                    backupLine.resize(reservedSize);
                     backupLine.append(goalLine);
-                    //maxsize hardcoded below, please fix it
-                    while (!(readLineToArray(backupLine,
-                          goalArrayOfFields, lineSize, 700, true))) {
-                        ifstr.sync();
-                        getline(ifstr, goalLine);
-                        backupLine.append(goalLine);
-                    }
+                    std::cout << backupLine << " backupLine\n";//debug
+                    //reservedline hardcoded higher, please fix it
                 }   
                 std::cout << goalArrayOfFields[lat_place] << ": This is latitude\n";//debug
                 objects[readFrom] = CulturalObject(std::stoi(goalArrayOfFields[id_place]),
@@ -151,8 +144,8 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 objects[readFrom].setDescription(goalArrayOfFields[description_place]);
                 objects[readFrom].setHistRef(goalArrayOfFields[histRef_place]);
                 readFrom++;
-                delete [] goalArrayOfFields;
             }
+            delete [] goalArrayOfFields;
         }
     }
 }

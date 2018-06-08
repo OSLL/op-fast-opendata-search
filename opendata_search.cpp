@@ -17,16 +17,12 @@ void doTest(std::ifstream & in) {
     delete[] array;
 }
 
-void doLogic(std::ifstream & in) {
-    doTest(in);
-}
-
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL,"Russian");
     char* filename = argv[1];
     std::ifstream in(filename);
     if (in.is_open()) {
-        doLogic(in);
+        doTest(in);
         in.close();
         return 0;
     }
