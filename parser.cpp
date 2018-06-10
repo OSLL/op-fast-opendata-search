@@ -17,30 +17,26 @@ bool readLineToArray (std::string & line, std::string * array, unsigned size) {
     temp.resize(line.size());
     unsigned tempcounter = 0;
     bool outline = true;
-    //unsigned position_of_quotes = 0;
     for (int j = 0, i = 0; (line[j] != '\n') && j < line.size(); j++) {//here is the bug - cannot read last element (Tax ID or whatever)
         if (line[j] == '\"' && outline) { //it was {j < line.size() && i < size}
             outline = false;
-            //position_of_quotes = j;
-            std::cout << "I am outline now, j = " << j << "\n"; //debug
+            //std::cout << "I am outline now, j = " << j << "\n"; //debug
             continue;
         }
         if (line[j] == '\"' && !outline) {
-            //std::cout << "j = " << j <<", (j - position_of_quotes) = " << (j - position_of_quotes) << '\n';//debug 
-            //if ((j - position_of_quotes) == 1) {//if we have 2 quotes symbol in a row
-            //    temp.at(tempcounter) = line[j];
-            //    tempcounter++;
-            //    std::cout << "I am in j - position\n";//debug
-            //}
-            //else {
+            if (line[j + 1] == '\"') {//if we have 2 quotes symbol in a row
+                temp.at(tempcounter) = line[j++];//move index to the right
+                tempcounter++;
+                std::cout << "founded 2 \" in a row, line[j++] = "<< line [j] << "\n";//debug
+            }
+            else {
                 outline = true;//we must went off only if there aren't two quotes in a row
-                std::cout << "Back to the line \n";//debug
-            //}
-            //position_of_quotes = 0;
+                //std::cout << "Back to the line \n";//debug
+            }
             continue;
         }
         if (line[j] == ',' && outline) {
-            std::cout << temp << " this is readed line\n"; //debug
+            //std::cout << temp << " this is readed line\n"; //debug
             temp.resize(tempcounter);
             array[i] = temp;
             tempcounter = 0;
@@ -54,8 +50,12 @@ bool readLineToArray (std::string & line, std::string * array, unsigned size) {
         } 
     }
     //write the last element
-    std::cout << temp << "This is last line\n"; //debug
+    if (outline)//debug
+        std::cout << temp << "This is last line\n"; //debug
+    std::cout << "Writing last element: " << temp << " , it's size before = " << temp.size();//dbg
     temp.resize(tempcounter);
+    std::cout << "\ntempcounter = " <<tempcounter;//debug
+    std::cout << "\nstill here, size after resizing = " << temp.size();//dbg
     array[size - 1] = temp;
     std::cout << "exit from function, return to the parser\n";//debug
     std::cout << "outline = " << outline << '\n';//debug
@@ -86,29 +86,39 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         std::string * arrayOfFields;
         arrayOfFields = new std::string [lineSize];
         readLineToArray (firstLine, arrayOfFields, lineSize);
+        std::cout << "size of first element = " << arrayOfFields[0].size() << '\n';//debug
+        std::cout << "size of last element = " << arrayOfFields[lineSize].size();//debug
         for (unsigned i = 0; i < lineSize; i++) {
-            if (arrayOfFields[i].compare("oid") == 0) {
+            std::string temp = arrayOfFields[i];
+            std::cout <<"Iteration №"<<i<<", element ="<<arrayOfFields[i]<<'\n';//debug
+            std::cout << i<<"-ый элемент массива строк = " <<arrayOfFields[i] << '\n';//debug
+            if (temp.compare("oid") == 0) {
                 id_place = i;
                 std::cout << "id_place = " << id_place << '\n';//debug
             }
-            else if (arrayOfFields[i].compare("name") == 0) {
+            else if (temp.compare("name") == 0) {
                 name_place = i;
+                std::cout << "name_place = " << name_place << '\n';//debug
             }
-            else if (arrayOfFields[i].compare("addressline") == 0) {
+            else if (temp.compare("addressline") == 0) {
                 address_place = i;
+                std::cout << "address_place = " << address_place << '\n';//debug
             }
-            else if (arrayOfFields[i].compare("coord_shirota") == 0) {
+            else if (temp.compare("coord_shirota") == 0) {
                 lat_place = i;
+                std::cout << "coord_shirota = " << lat_place << '\n';//debug
             }
-            else if (arrayOfFields[i].compare("coord_dolgota") == 0) {
+            else if (temp.compare("coord_dolgota") == 0) {
                 long_place = i;
+                std::cout << "coord_dolgota = " << long_place << '\n';//debug
             }
-            else if (arrayOfFields[i].compare("description") == 0) {
+            else if (temp.compare("description") == 0) {
                 description_place = i;
-                std::cout << "description_place =" << description_place;//debug
+                std::cout << "description_place = " << description_place << '\n';//debug
             }
-            else if (arrayOfFields[i].compare("obj_history") == 0) {
+            else if (temp.compare("obj_history") == 0) {
                 histRef_place = i;
+                std::cout << "histRef_place = " << histRef_place << '\n';//debug
             }
         }
         if (!(name_place && address_place && lat_place && long_place
