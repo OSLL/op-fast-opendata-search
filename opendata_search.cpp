@@ -11,9 +11,17 @@ this file or not
 
 void doTest(std::ifstream & in) {
     CulturalObject * array;
-    array = new CulturalObject [3];
-    parser(in, array, 0, 2);
-    std::cout << array[1].getDescription() << "Описание первог объекта; " << array[1].getAddress() << " Адрес первого объекта; Далее - долгота второго " << array[2].getLatitude();
+    array = new CulturalObject [10];
+    parser(in, array, 2, 10);
+    for (int i = 0; i < 10; i++) {
+        std::cout << "Object #" << i << "\nName = " << array[i].getName();
+        std::cout << "\nAddress = " << array[i].getAddress();
+        std::cout << "\nDescription = " << array[i].getDescription();
+        std::cout << "\nHistRef = " << array[i].getHistRef();
+        std::cout << "\nLatitude = " << array[i].getLatitude();
+        std::cout << "\nLongitude = " << array[i].getLongitude() <<"\n\n";
+}
+    
     delete[] array;
 }
 

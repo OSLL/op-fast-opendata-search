@@ -32,6 +32,7 @@ class CulturalObject {
         std::string getAddress() const {return address;}
         std::string getDescription() const {return description;}
         std::string getHistRef() const {return histRef;}
+        bool checkId() const {return id;}//check object is existing or not
         void setAddress(std::string addr) {address = addr;}
         void setDescription(std::string dscr) {description = dscr;}
         void setHistRef(std::string hstrf) {histRef = hstrf;}

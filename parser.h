@@ -6,4 +6,5 @@
 #include "culturalobject.h"
 bool readLineToArray (std::string & line, std::vector<std::string> & array);
 
-void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, unsigned readTo);
+void parser(std::ifstream &ifstr, CulturalObject objects[],
+            unsigned skip, unsigned needToRead);

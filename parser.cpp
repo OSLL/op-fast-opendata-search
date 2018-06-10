@@ -6,54 +6,57 @@
 #include "parser.h"
 
 /*
-This function turns every straight line to the secondary array of values like name, address etc.
-Array contains only sequence of "c-style strings", without any reference to CulturalObject
+This secondary function receive line as a string and read it in the vector of strings,
+each line separates by comma.
+Using: readLineToArray(string NeedToTurnIntoTheVector, vector GoalVector).
+*Be careful! GoalVector must be clean, because function append elements to it!
+Parameters are received by the reference.
+Function return true if reading was succesfull and end of csv-line has reached and false if not.
 */
-
-/* in line below function receive first parameter as reference to string and 
-the second as a reference to array of strings (at least I tried to do this)*/
 
 bool readLineToArray (std::string & line, std::vector<std::string> & array) {
     std::string temp;
     bool outline = true;
-    for (int j = 0, i = 0; (line[j] != '\n') && j < line.size(); j++) {//i for debug
-        if (line[j] == '\"' && outline) {
+    for (int i = 0; (line[i] != '\n') && i < line.size(); i++) {
+        if (line[i] == '\"' && outline) {
             outline = false;
             continue;
         }
-        if (line[j] == '\"' && !outline) {
-            if (line[j + 1] == '\"') {
-                temp += '\n';
-                j++;
-                std::cout << "founded 2 \" in a row, line[j++] = "<< line [j] << "\n";//debug
+        if (line[i] == '\"' && !outline) {
+            if (line[i + 1] == '\"') {//for correct search of double quotes
+                temp += '\"';
+                i++;
             }
             else {
                 outline = true;//we must went off only if there aren't two quotes in a row
             }
             continue;
         }
-        if (line[j] == ',' && outline) {
-            std::cout << temp << " this is readed line\n"; //debug
+        if (line[i] == ',' && outline) {
             array.push_back(temp);
             temp.clear();
-            std::cout << "readed line is " << array[i] << "; size is " << array[i].size();//debug
-            i++;//debug
         }
         else {
-            temp += line[j];
+            temp += line[i];
         } 
     }
-    //write the last element
-    std::cout << "Writing last element: " << temp << " , it's size of it = " << temp.size();//dbg
-    temp.pop_back();//remove last symbol from the last element
-    array.push_back(temp);
-    std::cout << "exit from function, return to the parser\n";//debug
-    std::cout << "outline = " << outline << '\n';//debug
+    temp.pop_back(); //remove last symbol from the last element
+    array.push_back(temp); //write the last element
     return outline; //if outline, string readed successfully, or we need to add information in it
 }
-         
 
-void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, unsigned readTo) {
+/*
+This function receive array of CulturalObjects and fill it with the text lines,
+readed from csv-file.
+Using:
+    parser(ifstream FileToRead, CulturalObject[] objectsToWrite, int skip, int MustRead).
+Function skip unnecessary lines in file (until skip index)
+and then rewrite received array with new objects from index 0 to MustRead.
+
+*/
+
+void parser(std::ifstream &ifstr, CulturalObject objects[],
+            unsigned skip, unsigned needToRead) {
     unsigned id_place = 0;
     unsigned name_place = 0;
     unsigned lat_place = 0;
@@ -66,56 +69,36 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         /*lets read first line and assign each value
         as a type - id, name or whatever else
         */
-        std::string firstLine;
-        getline(ifstr, firstLine);
+        std::string firstLine;//receive the first line of csv-file,
+        getline(ifstr, firstLine);// which contains list of headers
         std::vector<std::string> sequenceOfElements;
         readLineToArray (firstLine, sequenceOfElements);
-        std::cout << "size of first element = " << sequenceOfElements[0].size() << '\n';//debug
-        std::cout << "size of last element = ";//debug
-        std::cout <<sequenceOfElements[sequenceOfElements.size()-1].size() <<'\n';//dbg
         for (unsigned i = 0; i < sequenceOfElements.size(); i++) {
             std::string temp = sequenceOfElements[i];
-            std::cout <<"Iteration №"<<i<<", element ="<<sequenceOfElements[i]<<'\n';//debug
-            std::cout << i<<"-ый элемент массива строк = " <<sequenceOfElements[i] << '\n';//debug
-            std::cout << "размер этого элмента = " << sequenceOfElements[i].size() << '\n';//debug
             if (temp.compare("﻿oid") == 0) {
                 id_place = i;
-                std::cout << "id_place = " << id_place << '\n';//debug
-                std:: cout <<"size =" <<sequenceOfElements[i].size() << '\n';//debug
             }
             else if (temp.compare("name") == 0) {
                 name_place = i;
-                std::cout << "name_place = " << name_place;//debug
-                std:: cout <<"\nsize =" <<sequenceOfElements[i].size() << '\n';//debug
             }
             else if (temp.compare("addressline") == 0) {
                 address_place = i;
-                std::cout << "address_place = " << address_place << '\n';//debug
-                std:: cout <<"size =" <<sequenceOfElements[i].size() << '\n';//debug
             }
             else if (temp.compare("coord_shirota") == 0) {
                 lat_place = i;
-                std::cout << "coord_shirota = " << lat_place << '\n';//debug
             }
             else if (temp.compare("coord_dolgota") == 0) {
                 long_place = i;
-                std::cout << "coord_dolgota = " << long_place << '\n';//debug
-                std:: cout <<"size =" <<sequenceOfElements[i].size() << '\n';//debug
             }
             else if (temp.compare("description") == 0) {
                 description_place = i;
-                std::cout << "description_place = " << description_place << '\n';//debug
-                std:: cout <<"size =" <<sequenceOfElements[i].size() << '\n';//debug
             }
             else if (temp.compare("obj_history") == 0) {
                 histRef_place = i;
-                std::cout << "histRef_place = " << histRef_place << '\n';//debug
-                std:: cout <<"size =" <<sequenceOfElements[i].size() << '\n';//debug
             }
         }
         if (!(name_place && address_place && lat_place && long_place
             && description_place && histRef_place)) {
-            //delete sequenceOfElements;
             return; //receive file with incorrect fields, need flag or try/catch in this place
         } //this is unnecessary and bad block please replace it with 'try/catch' 
         //delete sequenceOfElements;
@@ -126,12 +109,19 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
         */
 
         std::string tempLine;
-        for (unsigned i = 0; i < readFrom; i++) {
+        for (unsigned i = 0; i < skip; i++) {
             ifstr.sync();
-            getline(ifstr, tempLine); //skip unnecessary lines
+            getline(ifstr, tempLine);
+            std::string unnecessaryLine = tempLine;
+            for (std::vector<std::string> temp;
+                 !(readLineToArray(unnecessaryLine, temp));) {
+                ifstr.sync();
+                getline(ifstr, tempLine);
+                unnecessaryLine.append(tempLine);
+            }//skip unnecessary lines
         }
         std::vector<std::string> goalVector;
-        while (readFrom < readTo && !ifstr.eof()) {
+        for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
            ifstr.sync();
            getline(ifstr, tempLine);
            std::string goalLine = tempLine;
@@ -142,18 +132,17 @@ void parser(std::ifstream &ifstr, CulturalObject objects[], unsigned readFrom, u
                 ifstr.sync();
                 getline(ifstr, tempLine);
                 goalLine.append(tempLine);
-                goalVector.clear();
-           }   
-           objects[readFrom] = CulturalObject(std::stoi(goalVector[id_place]),
+                goalVector.clear();//clean vector to rewrite it
+           }
+         //std::cout << "HistRef in en is: " << goalVector[histRef_place+1] <<'\n';//test of quotes
+           objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
                     std::stod(goalVector[lat_place]),
                     std::stod(goalVector[long_place]),
                     goalVector[name_place]); //call the constructor of CulturalObject
-            objects[readFrom].setAddress(goalVector[address_place]);
-            objects[readFrom].setDescription(goalVector[description_place]);
-            objects[readFrom].setHistRef(goalVector[histRef_place]);
-            readFrom++;
-            goalVector.clear();
+           objects[i].setAddress(goalVector[address_place]);
+           objects[i].setDescription(goalVector[description_place]);
+           objects[i].setHistRef(goalVector[histRef_place]);
+           goalVector.clear();
         }
-            //delete goalVector;
     }
 }
