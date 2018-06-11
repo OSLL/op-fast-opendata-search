@@ -1,13 +1,12 @@
-/*It is a simple application,
-that receive file name as a parameter
-and return information about consist
-this file or not
-*/
 #define EXPECTED 2 //Expected number of arguments is 2 because the first is the function name
 #include <iostream>
 #include <fstream>
 #include "culturalobject.h"
-#include "parser.h" 
+#include "parser.h"
+#include "objectcounter.h"
+
+/*
+*/
 
 void doTest(std::ifstream & in) {
     CulturalObject * array;
@@ -36,6 +35,8 @@ int main(int argc, char* argv[]) {
     char* filename = argv[1];
     std::ifstream in(filename);
     if (in.is_open()) {
+        int numberOfObjects = ObjectCounter(in);//test
+        std::cout << "Number of objects founded: " << numberOfObjects << '\n';//test
         doTest(in);
         in.close();
         return 0;
