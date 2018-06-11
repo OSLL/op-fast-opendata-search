@@ -7,4 +7,4 @@
 bool readLineToArray (std::string & line, std::vector<std::string> & array);
 
 void parser(std::ifstream &ifstr, CulturalObject objects[],
-            unsigned skip, unsigned needToRead);
+            unsigned needToRead, unsigned skip = 0);

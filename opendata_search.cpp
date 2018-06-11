@@ -12,9 +12,9 @@ this file or not
 void doTest(std::ifstream & in) {
     CulturalObject * array;
     array = new CulturalObject [10];
-    parser(in, array, 2, 10);
+    parser(in, array, 10);
     for (int i = 0; i < 10; i++) {
-        std::cout << "Object #" << i << "\nName = " << array[i].getName();
+        std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
         std::cout << "\nAddress = " << array[i].getAddress();
         std::cout << "\nDescription = " << array[i].getDescription();
         std::cout << "\nHistRef = " << array[i].getHistRef();
@@ -27,6 +27,12 @@ void doTest(std::ifstream & in) {
 
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL,"Russian");
+    if (argc < EXPECTED) {
+        std::cerr << "No <filename> found. Please call the program with correct file\n";
+        std::cerr << "Using: ./opendata_search.out <filename>\n";
+        std::cerr << "Example: ./opendata_search.out test-data.csv\n";
+        return 1;
+    }
     char* filename = argv[1];
     std::ifstream in(filename);
     if (in.is_open()) {
@@ -35,8 +41,9 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        std::cout << "File " << filename << " is NOT exist\n";
-        return 0;
+        std::cerr << "File " << filename << " is NOT exist\nPlease choose correct file\n";
+        std::cerr << "Using: ./opendata_search.out <filename>\n";
+        return 1;
     }
 }
     

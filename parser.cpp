@@ -4,6 +4,16 @@
 #include <string>
 #include "culturalobject.h"
 #include "parser.h"
+#define LOCALE_EN "_en"
+#define LOCALE_RU "" //this is default locale for this program
+#define ID "oid"
+#define NAME "name"
+#define ADDRESS "addressline"
+#define LAT "coord_shirota"
+#define LONG "coord_dolgota"
+#define DESCRIPTION "description"
+#define HISTREF "obj_history"
+
 
 /*
 This secondary function receive line as a string and read it in the vector of strings,
@@ -49,14 +59,15 @@ bool readLineToArray (std::string & line, std::vector<std::string> & array) {
 This function receive array of CulturalObjects and fill it with the text lines,
 readed from csv-file.
 Using:
-    parser(ifstream FileToRead, CulturalObject[] objectsToWrite, int skip, int MustRead).
-Function skip unnecessary lines in file (until skip index)
+    parser(ifstream FileToRead, CulturalObject[] objectsToWrite, int MustRead)
+    parser(ifstream FileToRead, CulturalObject[] objectsToWrite, int MustRead, int skip).
+Function skip unnecessary lines in file (until skip index), default parameter for skipping = 0.
 and then rewrite received array with new objects from index 0 to MustRead.
 
 */
 
 void parser(std::ifstream &ifstr, CulturalObject objects[],
-            unsigned skip, unsigned needToRead) {
+             unsigned needToRead, unsigned skip) {
     unsigned id_place = 0;
     unsigned name_place = 0;
     unsigned lat_place = 0;
@@ -75,25 +86,25 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
         readLineToArray (firstLine, sequenceOfElements);
         for (unsigned i = 0; i < sequenceOfElements.size(); i++) {
             std::string temp = sequenceOfElements[i];
-            if (temp.compare("﻿oid") == 0) {
+            if (temp.compare(ID) == 0) {
                 id_place = i;
             }
-            else if (temp.compare("name") == 0) {
+            else if (temp.compare(NAME) == 0) {
                 name_place = i;
             }
-            else if (temp.compare("addressline") == 0) {
+            else if (temp.compare(ADDRESS) == 0) {
                 address_place = i;
             }
-            else if (temp.compare("coord_shirota") == 0) {
+            else if (temp.compare(LAT) == 0) {
                 lat_place = i;
             }
-            else if (temp.compare("coord_dolgota") == 0) {
+            else if (temp.compare(LONG) == 0) {
                 long_place = i;
             }
-            else if (temp.compare("description") == 0) {
+            else if (temp.compare(DESCRIPTION) == 0) {
                 description_place = i;
             }
-            else if (temp.compare("obj_history") == 0) {
+            else if (temp.compare(HISTREF) == 0) {
                 histRef_place = i;
             }
         }
