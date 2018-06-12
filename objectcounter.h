@@ -2,6 +2,12 @@
 #include <string>
 #include <fstream>
 
+/*
+This is a small function which receive csv-file and counts
+number of objects in it.
+If received file isn't open, function returns -1.
+*/
+
 int ObjectCounter(std::ifstream & file) {
     std::string readedLine;
     int counter = 0;
@@ -23,11 +29,10 @@ int ObjectCounter(std::ifstream & file) {
                 outline = true;
                 continue;
             }
-            if ((readedLine.at(i) == '\n') && outline) {
-                counter++;
-            }
         }
+        if (outline)
+            counter++;
     }
     while (!file.eof());
-    return counter;
+    return counter - 1;//first string isn't an object!
 }

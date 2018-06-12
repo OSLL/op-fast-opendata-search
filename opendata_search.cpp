@@ -8,11 +8,12 @@
 /*
 */
 
-void doTest(std::ifstream & in) {
+void doTest(std::ifstream & in, int size) {
     CulturalObject * array;
-    array = new CulturalObject [10];
-    parser(in, array, 10);
-    for (int i = 0; i < 10; i++) {
+    array = new CulturalObject [size-15];
+    std::cout << "Go to the parser\n";//debug
+    parser(in, array, (size-15));
+    for (int i = 0; i < (size-15); i++) {
         std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
         std::cout << "\nAddress = " << array[i].getAddress();
         std::cout << "\nDescription = " << array[i].getDescription();
@@ -37,9 +38,13 @@ int main(int argc, char* argv[]) {
     if (in.is_open()) {
         int numberOfObjects = ObjectCounter(in);//test
         std::cout << "Number of objects founded: " << numberOfObjects << '\n';//test
-        doTest(in);
-        in.close();
-        return 0;
+        in.clear();//nulling "eof" flag
+        if (numberOfObjects > 0) {
+            in.seekg(0, std::ios::beg);
+            doTest(in, numberOfObjects);
+            in.close();
+            return 0;
+        }
     }
     else {
         std::cerr << "File " << filename << " is NOT exist\nPlease choose correct file\n";

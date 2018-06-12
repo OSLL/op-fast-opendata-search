@@ -133,6 +133,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
         }
         std::vector<std::string> goalVector;
         for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
+           std::cout << "in parser. Iteration #" << i << '\n';//debug
            ifstr.sync();
            getline(ifstr, tempLine);
            std::string goalLine = tempLine;
