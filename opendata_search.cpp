@@ -4,6 +4,7 @@
 #include "culturalobject.h"
 #include "parser.h"
 #include "objectcounter.h"
+#include "search.h"
 
 /*
 */
@@ -14,14 +15,14 @@ void doTest(std::ifstream & in, int size) {
     std::cout << "Go to the parser\n";//debug
     parser(in, array, (size-15));
     for (int i = 0; i < (size-15); i++) {
-        std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
-        std::cout << "\nAddress = " << array[i].getAddress();
-        std::cout << "\nDescription = " << array[i].getDescription();
-        std::cout << "\nHistRef = " << array[i].getHistRef();
-        std::cout << "\nLatitude = " << array[i].getLatitude();
-        std::cout << "\nLongitude = " << array[i].getLongitude() <<"\n\n";
+        //std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
+        //std::cout << "\nAddress = " << array[i].getAddress();
+        //std::cout << "\nDescription = " << array[i].getDescription();
+        //std::cout << "\nHistRef = " << array[i].getHistRef();
+        //std::cout << "\nLatitude = " << array[i].getLatitude();
+        //std::cout << "\nLongitude = " << array[i].getLongitude() <<"\n\n";
 }
-    
+    search (array, "памятник", 45);
     delete[] array;
 }
 
