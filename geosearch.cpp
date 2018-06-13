@@ -1,0 +1,30 @@
+#include <iostream>
+#include <string>
+#include "culturalobject.h"
+#include "geosearch.h"
+
+/*
+This function receive array of CulturalObjects, Point (which consist from latitude and longitude),
+and radius in meters.
+Function analyze coordinates of each CulturalObject and if it near to the location point, function
+return it in standart output: name of object found and then coordinates.
+*/
+
+void geosearch(CulturalObject objects[], unsigned size, Point location, double radius) {
+     for (unsigned i = 0; i < size; i++) {
+         if (!(objects[i].checkId())) {
+             continue;
+         }
+         if (!objects[i].haveCoordinates()) {
+             std::cout << "Object #" << (i + 1) << "without coordinates! Name = ";
+             std::cout << objects[i].getName() << std::endl;
+         }
+         else if (objects[i].getPoint().getDistance(location) <= radius) {
+             std::cout << "Object #" << (i + 1) << "near. Name = ";
+             std::cout << objects[i].getName() << ",\nlongitude = ";
+             std::cout << objects[i].getLongitude() << ",\nlatitude = ";
+             std::cout << objects[i].getLatitude() << '\n';
+         }
+     }
+}
+    
