@@ -5,24 +5,29 @@
 #include "parser.h"
 #include "objectcounter.h"
 #include "search.h"
+#include "geosearch.h"
 
 /*
 */
 
 void doTest(std::ifstream & in, int size) {
     CulturalObject * array;
-    array = new CulturalObject [size-15];
-    std::cout << "Go to the parser\n";//debug
-    parser(in, array, (size-15));
-    for (int i = 0; i < (size-15); i++) {
-        //std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
-        //std::cout << "\nAddress = " << array[i].getAddress();
-        //std::cout << "\nDescription = " << array[i].getDescription();
-        //std::cout << "\nHistRef = " << array[i].getHistRef();
-        //std::cout << "\nLatitude = " << array[i].getLatitude();
-        //std::cout << "\nLongitude = " << array[i].getLongitude() <<"\n\n";
-}
-    search (array, "памятник", 45);
+    array = new CulturalObject [size];
+    //std::cout << "Go to the parser\n";//debug
+    parser(in, array, size);
+    /*
+    for (int i = 0; i < size; i++) {
+        std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
+        std::cout << "\nAddress = " << array[i].getAddress();
+        std::cout << "\nDescription = " << array[i].getDescription();
+        std::cout << "\nHistRef = " << array[i].getHistRef();
+        std::cout << "\nLatitude = " << array[i].getLatitude();
+        std::cout << "\nLongitude = " << array[i].getLongitude() <<"\n\n";
+    }
+    */
+    search (array, "памятник", size);
+    //std::cout << "go to the geosearch\n";//debug
+    geosearch (array, 76, Point(59.954574,30.325022), 3000);
     delete[] array;
 }
 

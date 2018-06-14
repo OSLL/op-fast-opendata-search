@@ -7,7 +7,8 @@
 This function receive array of CulturalObjects, Point (which consist from latitude and longitude),
 and radius in meters.
 Function analyze coordinates of each CulturalObject and if it near to the location point, function
-return it in standart output: name of object found and then coordinates.
+return it in standart output: name of object found and on the next lines address
+and distance to object will be showned.
 */
 
 void geosearch(CulturalObject objects[], unsigned size, Point location, double radius) {
@@ -20,10 +21,12 @@ void geosearch(CulturalObject objects[], unsigned size, Point location, double r
              std::cout << objects[i].getName() << std::endl;
          }
          else if (objects[i].getPoint().getDistance(location) <= radius) {
-             std::cout << "Object #" << (i + 1) << "near. Name = ";
-             std::cout << objects[i].getName() << ",\nlongitude = ";
-             std::cout << objects[i].getLongitude() << ",\nlatitude = ";
-             std::cout << objects[i].getLatitude() << '\n';
+             std::cout << "Object #" << (i + 1) << " near.\nName = ";
+             std::cout << objects[i].getName() << "\nAddress is: " << objects[i].getAddress();
+             //std::cout << ",\nlongitude = " << objects[i].getLongitude();
+             //std::cout << ",\nlatitude = " << objects[i].getLatitude();
+             std::cout << "\nDistance to the object is ";
+             std::cout << objects[i].getPoint().getDistance(location) << " meters\n"; 
          }
      }
 }

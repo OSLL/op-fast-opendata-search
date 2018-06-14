@@ -17,7 +17,7 @@ int ObjectCounter(std::ifstream & file) {
     do {
         file.sync();
         if (file.eof()) {
-            return counter;
+            return counter - 1;
         }
         getline(file, readedLine);
         for (int i = 0; i < readedLine.size(); i++) {
@@ -30,7 +30,7 @@ int ObjectCounter(std::ifstream & file) {
                 continue;
             }
         }
-        if (outline)
+        if (outline && readedLine != "")
             counter++;
     }
     while (!file.eof());
