@@ -4,6 +4,7 @@
 #include <string>
 #include "culturalobject.h"
 #include "parser.h"
+
 #define LOCALE_EN "_en"
 #define LOCALE_RU "" //this is default locale for this program
 #define ID "oid"
