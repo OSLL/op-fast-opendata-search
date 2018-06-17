@@ -10,9 +10,6 @@
 #include "search.h"
 #include "geosearch.h"
 
-/*
-*/
-
 #define MUSEUMS "./data/data-museums.csv"
 #define SIGHTS "./data/data-sights.csv"
 #define NO_FILE_NAME ""
@@ -26,7 +23,7 @@ struct Arguments {
     Point coordinates;
     double radius;
     Arguments() {
-        Filename = toFind = "";
+        Filename = toFind = NO_FILE_NAME;
         search = geosearch = false;
         limit = 0U;
         radius = 0.0;
@@ -56,9 +53,11 @@ void FunctionChoice (Arguments &args) {
             }
             else {
                 unsigned size = args.limit;
+                unsigned skip = 0;
                 while (numberOfObjects > 0) {
+                    in.seekg(0, std::ios::beg);
                     objects = new CulturalObject[size];
-                    parser(in, objects, size);
+                    parser(in, objects, size, skip);
                     if (args.search) {
                         search(objects, args.toFind, size);
                     }
@@ -66,14 +65,17 @@ void FunctionChoice (Arguments &args) {
                         geosearch(objects, size, args.coordinates, args.radius);
                     }
                     delete [] objects;
-                    numberOfObjects -= args.limit;
+                    numberOfObjects -= size;
+                    skip += size;
                     if (numberOfObjects < args.limit) {
                         size = numberOfObjects;
                     }
                 }
             }
         }
-        in.close();
+        if (in.is_open()) {
+            in.close();
+        }
     }
     else {
         std::cerr << "File " << args.Filename << " is NOT exist\nPlease choose correct file\n";
@@ -81,26 +83,6 @@ void FunctionChoice (Arguments &args) {
     }
 
 }
-/*
-void doTest(std::ifstream & in, int size) {
-    CulturalObject * array;
-    array = new CulturalObject [size];
-    //std::cout << "Go to the parser\n";//debug
-    parser(in, array, size);
-    for (int i = 0; i < size; i++) {
-        std::cout << "Object #" << (i+1) << "\nName = " << array[i].getName();
-        std::cout << "\nAddress = " << array[i].getAddress();
-        std::cout << "\nDescription = " << array[i].getDescription();
-        std::cout << "\nHistRef = " << array[i].getHistRef();
-        std::cout << "\nLatitude = " << array[i].getLatitude();
-        std::cout << "\nLongitude = " << array[i].getLongitude() <<"\n\n";
-    }
-    search (array, "памятник", size);
-    //std::cout << "go to the geosearch\n";//debug
-    geosearch (array, 76, Point(59.954574,30.325022), 3000);
-    delete[] array;
-}
-*/
 
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL,"Russian");
@@ -120,7 +102,6 @@ int main(int argc, char* argv[]) {
         if (arg == "-search") {
             args.search = true;
             args.toFind = (std::string) argv[++i];
-            std::cout << argv[i] << " <- this is search query\n";//debug
         }
         if (arg == "-geosearch") {
             args.geosearch = true;
@@ -167,9 +148,6 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    std::cout << "Test: args are: " << args.Filename << "Latitude =";//debug
-    std::cout << args.coordinates.getLatitude(); //debug
-
     //Now we are moving to the main logic:
     if (args.Filename == NO_FILE_NAME) {
         args.Filename = MUSEUMS;
