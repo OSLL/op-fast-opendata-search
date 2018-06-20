@@ -50,6 +50,7 @@ class CulturalObject {
         std::string getDescription() const {return description;}
         std::string getHistRef() const {return histRef;}
         Point getPoint() const {return coordinates;}
+        int getId() const {return id;}
         bool checkId() const {return id;}//check object is existing or not
         bool haveCoordinates() {return (this->getLatitude() > 0)? (this->getLongitude() > 0): false;}
         void setAddress(std::string addr) {address = addr;}

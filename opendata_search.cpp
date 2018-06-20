@@ -34,13 +34,11 @@ void FunctionChoice (Arguments &args) {
     std::ifstream in(args.Filename);
     if (in.is_open()) {
         int numberOfObjects = ObjectCounter(in);
-        std::cout << "Number of objects founded: " << numberOfObjects << '\n';//test
         in.clear();//nulling "eof" flag
         if (numberOfObjects > 0) {
             in.seekg(0, std::ios::beg);
             CulturalObject * objects;
             if (args.limit == 0) {
-                std::cout << "In the limitless FunctionChoice\n";//debug
                 objects = new CulturalObject[numberOfObjects];
                 parser(in, objects, numberOfObjects);//fill array of objects
                 if (args.search) {

@@ -29,7 +29,7 @@ void search(CulturalObject objects[], std::string toFind, unsigned size) {
         //Then we'll print founded matches in std::out or just go forward if no matches found
         if (nameMatch || descrMatch || histMatch) {
             //print name in any case:
-            std::cout << "Object #"<< i + 1 << ": " << objects[i].getName();
+            std::cout << "Object, id #"<< objects[i].getId() << ": " << objects[i].getName();
             if (descrMatch)
                 std::cout << '\n' << objects[i].getDescription();
             if (histMatch)
