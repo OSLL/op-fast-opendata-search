@@ -4,6 +4,7 @@
 #include <string>
 #include "culturalobject.h"
 #include "parser.h"
+
 #define LOCALE_EN "_en"
 #define LOCALE_RU "" //this is default locale for this program
 #define ID "oid"
@@ -133,6 +134,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
         }
         std::vector<std::string> goalVector;
         for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
+           //std::cout << "in parser. Iteration #" << i << '\n';//debug
            ifstr.sync();
            getline(ifstr, tempLine);
            std::string goalLine = tempLine;
@@ -145,11 +147,16 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
                 goalLine.append(tempLine);
                 goalVector.clear();//clean vector to rewrite it
            }
-         //std::cout << "HistRef in en is: " << goalVector[histRef_place+1] <<'\n';//test of quotes
-           objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
+           if ((goalVector[lat_place] == "") || (goalVector[long_place] == "")) {
+               objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
+                    goalVector[name_place]); //call the constructor without coordinates
+           }
+           else {
+               objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
                     std::stod(goalVector[lat_place]),
                     std::stod(goalVector[long_place]),
-                    goalVector[name_place]); //call the constructor of CulturalObject
+                    goalVector[name_place]); //call the common constructor
+           }
            objects[i].setAddress(goalVector[address_place]);
            objects[i].setDescription(goalVector[description_place]);
            objects[i].setHistRef(goalVector[histRef_place]);
