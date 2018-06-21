@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <cstdlib>
 #include "culturalobject.h"
 #include "parser.h"
@@ -13,18 +14,20 @@
 #define MUSEUMS "./data/data-museums.csv"
 #define SIGHTS "./data/data-sights.csv"
 #define NO_FILE_NAME ""
+#define NUM_OF_FIELDS 4 //name, address, description and histref
 
 struct Arguments {
     std::string Filename;
     bool search;
     bool geosearch;
+    bool complexsearch;
     std::string toFind;
     unsigned limit;
     Point coordinates;
     double radius;
     Arguments() {
         Filename = toFind = NO_FILE_NAME;
-        search = geosearch = false;
+        search = geosearch = complexsearch = false;
         limit = 0U;
         radius = 0.0;
     }
@@ -41,13 +44,20 @@ void FunctionChoice (Arguments &args) {
             if (args.limit == 0) {
                 objects = new CulturalObject[numberOfObjects];
                 parser(in, objects, numberOfObjects);//fill array of objects
+                if (args.complexsearch) {
+                    std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields(NUM_OF_FIELDS);
+                    objectsToMap(objects, numberOfObjects, fields);
+                    std::vector<std::string> toFind;
+                    readLineToArray(args.toFind, toFind, ' ');
+                    complexSearch(fields, toFind);
+                }
                 if (args.search) {
                     search(objects, args.toFind, numberOfObjects);
                 }
                 if (args.geosearch) {
                     geosearch(objects, numberOfObjects, args.coordinates, args.radius);
                 }
-                delete [] objects;
+                delete [] objects;     
             }
             else {
                 unsigned size = args.limit;
@@ -136,7 +146,7 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-        if (arg == "-limit") {
+        if ((arg == "-limit") && !args.complexsearch) {
             args.limit = atoi(argv[++i]);
             if (args.limit < 0) {
                 args.limit = 0;
@@ -144,6 +154,12 @@ int main(int argc, char* argv[]) {
                 std::cout << "Using: ./opendata_search.out -limit <integer value of limit>\n";
                 std::cout << "!App will now work without limit, use system shortcuts to stop it!\n";
             }
+        }
+        if (arg == "-complexsearch") {
+            args.complexsearch = true;
+            args.search = false;
+            args.limit = 0;
+            args.toFind = (std::string) argv[++i];
         }
     }
     //Now we are moving to the main logic:
@@ -158,5 +174,3 @@ int main(int argc, char* argv[]) {
     }
     return 0;
 }
-    
-

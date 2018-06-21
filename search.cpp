@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <map>
 #include <search.h>
 #include "culturalobject.h"
 
@@ -37,6 +39,33 @@ void search(CulturalObject objects[], std::string toFind, unsigned size) {
             std::cout << std::endl;
         }
         nameMatch = descrMatch = histMatch = false;
+    }
+}
+
+void complexSearch(std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields, std::vector<std::string> toFind) {
+    for (unsigned i = 0; i < fields.size(); i++) {
+        for (unsigned j = 0; j < toFind.size(); j++) {
+            std::map<std::string, std::vector<CulturalObject *>>::iterator fielditer = fields[i].begin();
+            fielditer = fields[i].find(toFind[j]);
+            if (fielditer != fields[i].end()) {
+                std::vector<CulturalObject *> temp = fielditer->second;
+                for (unsigned k = 0; k < temp.size(); k++) {
+                    std::cout << "Object, id #" << (*temp[k]).getId() << ' ';
+                    if (i == 0) {//nameplace
+                        std::cout << (*temp[k]).getName() << '\n';
+                    }
+                    if (i == 1) {//addressplace
+                        std::cout << temp[k]->getAddress() << '\n';
+                    }
+                    if (i == 2) {//descriptionplace
+                        std::cout << temp[k]->getDescription() << '\n';
+                    }
+                    if (i == 3) {//histrefplace
+                        std::cout << temp[k]->getHistRef() << '\n';
+                    }
+                }
+            }
+        }
     }
 }
 
