@@ -36,22 +36,25 @@ struct Arguments {
 void FunctionChoice (Arguments &args) {
     std::ifstream in(args.Filename);
     if (in.is_open()) {
+        std::cout << "Reading number of objects";//static element of progress bar
         int numberOfObjects = ObjectCounter(in);
+        std::cout << '\r' << std::flush;//clear the first line
         in.clear();//nulling "eof" flag
         if (numberOfObjects > 0) {
             in.seekg(0, std::ios::beg);
             CulturalObject * objects;
             if (args.limit == 0) {
                 objects = new CulturalObject[numberOfObjects];
-                parser(in, objects, numberOfObjects);//fill array of objects
+                std::cout << "Now reading a file: " << args.Filename << ". ";//static element of progress bar
+                parser(in, objects, numberOfObjects);//fill array of objects, while parser read the file it returns progress bar in cout
+                std::cout << '\r' << std::flush;//clear this line
                 if (args.complexsearch) {
                     std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields(NUM_OF_FIELDS);
                     objectsToMap(objects, numberOfObjects, fields);
                     std::vector<std::string> toFind;
-                    //std::cout << "In complexsearch\nReaded arg is: " << args.toFind << '\n';//debug
+                    std::cout << "Now convert CulturalObjects to collections of map, ";//static element of progress bar
                     readLineToArray(args.toFind, toFind, ' ');
-                    //for (unsigned i; i < toFind.size(); i++)//debug
-                        //std::cout << "readed line "<< i+1 << "in arg is " << toFind[i] << '\n';//debug 
+                    std::cout << '\r' << std::flush;//clear the static line
                     complexSearch(fields, toFind);
                 }
                 if (args.search) {
@@ -68,7 +71,9 @@ void FunctionChoice (Arguments &args) {
                 while (numberOfObjects > 0) {
                     in.seekg(0, std::ios::beg);
                     objects = new CulturalObject[size];
-                    parser(in, objects, size, skip);
+                    std::cout << "Reading file with limit, ";//static line of progress bar
+                    parser(in, objects, size, skip);//every time parser read the file it returns progress bar line in cout
+                    std::cout << '\r' << std::flush;//clear this line
                     if (args.search) {
                         search(objects, args.toFind, size);
                     }

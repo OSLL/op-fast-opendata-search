@@ -6,6 +6,7 @@
 #include <iterator>
 #include "culturalobject.h"
 #include "parser.h"
+#include <iomanip>
 
 #define LOCALE_EN "_en"
 #define LOCALE_RU "" //this is default locale for this program
@@ -86,7 +87,7 @@ Using:
     parser(ifstream FileToRead, CulturalObject[] objectsToWrite, int MustRead, int skip).
 Function skip unnecessary lines in file (until skip index), default parameter for skipping = 0.
 and then rewrite received array with new objects from index 0 to MustRead.
-
+Also this function return to standart output progress in percents where it is in file reading now.
 */
 
 void parser(std::ifstream &ifstr, CulturalObject objects[],
@@ -98,6 +99,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
     unsigned address_place = 0;
     unsigned description_place = 0;
     unsigned histRef_place = 0;
+    unsigned percent_readed = 0;//yhis variable using in progress bar
     
     if (ifstr.is_open()) {
         /*lets read first line and assign each value
@@ -155,34 +157,42 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
             }//skip unnecessary lines
         }
         std::vector<std::string> goalVector;
+        std::cout << "Progress = ";//phrase for progress bar
         for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
-           ifstr.sync();
-           getline(ifstr, tempLine);
-           std::string goalLine = tempLine;
-           /* if line readed patrially, add old line to backupLine and call
-           read to vector function with the full string 
-           */
-           while (!(readLineToArray(goalLine, goalVector))) { 
+            std::cout.setf(std::ios::fixed);//set the fixed width of printiong field
+            std::cout << std::setw(3) << percent_readed << std::setw(1) << "%";//printing to progress bar
+            std::cout.unsetf(std::ios::fixed);
+            ifstr.sync();
+            getline(ifstr, tempLine);
+            std::string goalLine = tempLine;
+            /* if line readed patrially, add old line to backupLine and call
+            read to vector function with the full string 
+            */
+            while (!(readLineToArray(goalLine, goalVector))) { 
                 ifstr.sync();
                 getline(ifstr, tempLine);
                 goalLine.append(tempLine);
                 goalVector.clear();//clean vector to rewrite it
-           }
-           if ((goalVector[lat_place] == "") || (goalVector[long_place] == "")) {
+            }
+            if ((goalVector[lat_place] == "") || (goalVector[long_place] == "")) {
                objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
                     goalVector[name_place]); //call the constructor without coordinates
-           }
-           else {
+            }
+            else {
                objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
                     std::stod(goalVector[lat_place]),
                     std::stod(goalVector[long_place]),
                     goalVector[name_place]); //call the common constructor
-           }
-           objects[i].setAddress(goalVector[address_place]);
-           objects[i].setDescription(goalVector[description_place]);
-           objects[i].setHistRef(goalVector[histRef_place]);
-           goalVector.clear();
+            }
+            objects[i].setAddress(goalVector[address_place]);
+            objects[i].setDescription(goalVector[description_place]);
+            objects[i].setHistRef(goalVector[histRef_place]);
+            goalVector.clear();
+            std::cout << "\b\b\b\b\b";//delete current progress in progress bar
+            percent_readed = ((double)i) / needToRead * 100;//recalculate progress level
+            //std::cout << percent_readed << '\n';//debug
         }
+        std::cout << "\b\b\b\b\b\b\b\b\b\b\b";//delete phrase for progrress bar
     }
 }
 
@@ -196,8 +206,12 @@ Each collection in this vector respond to the certain field of CulturalObject
 */
 
 void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map<std::string, std::vector<CulturalObject *>>> & Fields) {
-    //std::cout << "We are in objects to map\n";//debug
-    for (unsigned i = 0; i < size; i++) {
+    unsigned percent_readed = 0;//variable for progress bar
+    std::cout << "Progress = ";//phrase for progress bar
+    for (unsigned i = 0; i < size; i++) {//read CulturalObjects from 0 to (size-1)
+        std::cout.setf(std::ios::fixed);//set the fixed width of printiong field
+        std::cout << std::setw(3) << percent_readed << std::setw(1) << "%";//printing to progress bar
+        std::cout.unsetf(std::ios::fixed);
         std::string temp;
         std::vector<std::string> splittedFields;
         temp = objects[i].getName();
@@ -224,5 +238,9 @@ void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map
             readLineToArray(temp, splittedFields, ' ');
             fillMultimap(splittedFields, Fields[3], &objects[i]);
         }
+        percent_readed = ((double)i) / size * 100;
+        //std::cout << percent_readed << '\n';//debug
+        std::cout << "\b\b\b\b\b";//delete current progress in progress bar
    }
+   std::cout << "\b\b\b\b\b\b\b\b\b\b\b";//delete phrase for progrress bar
 }
