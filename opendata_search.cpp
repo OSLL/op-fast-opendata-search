@@ -48,7 +48,10 @@ void FunctionChoice (Arguments &args) {
                     std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields(NUM_OF_FIELDS);
                     objectsToMap(objects, numberOfObjects, fields);
                     std::vector<std::string> toFind;
+                    //std::cout << "In complexsearch\nReaded arg is: " << args.toFind << '\n';//debug
                     readLineToArray(args.toFind, toFind, ' ');
+                    //for (unsigned i; i < toFind.size(); i++)//debug
+                        //std::cout << "readed line "<< i+1 << "in arg is " << toFind[i] << '\n';//debug 
                     complexSearch(fields, toFind);
                 }
                 if (args.search) {

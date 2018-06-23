@@ -24,12 +24,13 @@ inline void fillMultimap (std::vector<std::string> splitted, std::map<std::strin
         fielditer = field.find(splitted[i]);//find if there is key with this word
         if (fielditer != field.end()) {//if it is here 
             fielditer->second.push_back(ptrToObject);//add pointer to the current object
-            //std::cout << "Key is " << fielditer->first << ", Value is " << ptrToObject << std::endl;//debug
+            //std::cout << "Old Key is " << fielditer->first << ", Value is " << ptrToObject << std::endl;//debug
         }
         else {//if not
             std::vector<CulturalObject *> temp;//we need to construct new vector
             temp.push_back(ptrToObject);//and then add to it pointer to our CulturalObject
             field.insert(make_pair(splitted[i], temp));//make a new key and add a word in the object as key and vector as value
+            //std::cout << "New Key is " << splitted[i] << ", Value is " << ptrToObject << std::endl;//debug
         }
     }
 }
@@ -70,7 +71,9 @@ bool readLineToArray (std::string & line, std::vector<std::string> & array, char
             temp += line[i];
         } 
     }
-    temp.pop_back(); //remove last symbol from the last element
+    if (delim == '.') {
+        temp.pop_back(); //remove last symbol from the last element
+    }
     array.push_back(temp); //write the last element
     return outline; //if outline, string readed successfully, or we need to add information in it
 }
