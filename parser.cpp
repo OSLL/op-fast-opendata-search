@@ -2,8 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <map>
+#include <iterator>
 #include "culturalobject.h"
 #include "parser.h"
+#include <iomanip>
 
 #define LOCALE_EN "_en"
 #define LOCALE_RU "" //this is default locale for this program
@@ -14,18 +17,36 @@
 #define LONG "coord_dolgota"
 #define DESCRIPTION "description"
 #define HISTREF "obj_history"
+#define EMPTY ""
 
+inline void fillMultimap (std::vector<std::string> splitted, std::map<std::string, std::vector<CulturalObject *>> & field, CulturalObject * ptrToObject) {
+    std::map<std::string, std::vector<CulturalObject *>>::iterator fielditer = field.begin();
+    for (unsigned i = 0; i < splitted.size(); i++) {
+        fielditer = field.find(splitted[i]);//find if there is key with this word
+        if (fielditer != field.end()) {//if it is here 
+            fielditer->second.push_back(ptrToObject);//add pointer to the current object
+            //std::cout << "Old Key is " << fielditer->first << ", Value is " << ptrToObject << std::endl;//debug
+        }
+        else {//if not
+            std::vector<CulturalObject *> temp;//we need to construct new vector
+            temp.push_back(ptrToObject);//and then add to it pointer to our CulturalObject
+            field.insert(make_pair(splitted[i], temp));//make a new key and add a word in the object as key and vector as value
+            //std::cout << "New Key is " << splitted[i] << ", Value is " << ptrToObject << std::endl;//debug
+        }
+    }
+}
 
 /*
 This secondary function receive line as a string and read it in the vector of strings,
-each line separates by comma.
+each line separates by delimiter, default delimiter is comma.
 Using: readLineToArray(string NeedToTurnIntoTheVector, vector GoalVector).
 *Be careful! GoalVector must be clean, because function append elements to it!
 Parameters are received by the reference.
 Function return true if reading was succesfull and end of csv-line has reached and false if not.
+Also used to split field with specified delimiter e.g. space symbol
 */
 
-bool readLineToArray (std::string & line, std::vector<std::string> & array) {
+bool readLineToArray (std::string & line, std::vector<std::string> & array, char delim = ',') {
     std::string temp;
     bool outline = true;
     for (int i = 0; (line[i] != '\n') && i < line.size(); i++) {
@@ -43,7 +64,7 @@ bool readLineToArray (std::string & line, std::vector<std::string> & array) {
             }
             continue;
         }
-        if (line[i] == ',' && outline) {
+        if (line[i] == delim && outline) {
             array.push_back(temp);
             temp.clear();
         }
@@ -51,7 +72,9 @@ bool readLineToArray (std::string & line, std::vector<std::string> & array) {
             temp += line[i];
         } 
     }
-    temp.pop_back(); //remove last symbol from the last element
+    if (delim == '.') {
+        temp.pop_back(); //remove last symbol from the last element
+    }
     array.push_back(temp); //write the last element
     return outline; //if outline, string readed successfully, or we need to add information in it
 }
@@ -64,7 +87,7 @@ Using:
     parser(ifstream FileToRead, CulturalObject[] objectsToWrite, int MustRead, int skip).
 Function skip unnecessary lines in file (until skip index), default parameter for skipping = 0.
 and then rewrite received array with new objects from index 0 to MustRead.
-
+Also this function return to standart output progress in percents where it is in file reading now.
 */
 
 void parser(std::ifstream &ifstr, CulturalObject objects[],
@@ -76,6 +99,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
     unsigned address_place = 0;
     unsigned description_place = 0;
     unsigned histRef_place = 0;
+    unsigned percent_readed = 0;//yhis variable using in progress bar
     
     if (ifstr.is_open()) {
         /*lets read first line and assign each value
@@ -133,34 +157,90 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
             }//skip unnecessary lines
         }
         std::vector<std::string> goalVector;
+        std::cout << "Progress = ";//phrase for progress bar
         for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
-           //std::cout << "in parser. Iteration #" << i << '\n';//debug
-           ifstr.sync();
-           getline(ifstr, tempLine);
-           std::string goalLine = tempLine;
-           /* if line readed patrially, add old line to backupLine and call
-           read to vector function with the full string 
-           */
-           while (!(readLineToArray(goalLine, goalVector))) { 
+            std::cout.setf(std::ios::fixed);//set the fixed width of printiong field
+            std::cout << std::setw(3) << percent_readed << std::setw(1) << "%";//printing to progress bar
+            std::cout.unsetf(std::ios::fixed);
+            ifstr.sync();
+            getline(ifstr, tempLine);
+            std::string goalLine = tempLine;
+            /* if line readed patrially, add old line to backupLine and call
+            read to vector function with the full string 
+            */
+            while (!(readLineToArray(goalLine, goalVector))) { 
                 ifstr.sync();
                 getline(ifstr, tempLine);
                 goalLine.append(tempLine);
                 goalVector.clear();//clean vector to rewrite it
-           }
-           if ((goalVector[lat_place] == "") || (goalVector[long_place] == "")) {
+            }
+            if ((goalVector[lat_place] == "") || (goalVector[long_place] == "")) {
                objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
                     goalVector[name_place]); //call the constructor without coordinates
-           }
-           else {
+            }
+            else {
                objects[i] = CulturalObject(std::stoi(goalVector[id_place]),
                     std::stod(goalVector[lat_place]),
                     std::stod(goalVector[long_place]),
                     goalVector[name_place]); //call the common constructor
-           }
-           objects[i].setAddress(goalVector[address_place]);
-           objects[i].setDescription(goalVector[description_place]);
-           objects[i].setHistRef(goalVector[histRef_place]);
-           goalVector.clear();
+            }
+            objects[i].setAddress(goalVector[address_place]);
+            objects[i].setDescription(goalVector[description_place]);
+            objects[i].setHistRef(goalVector[histRef_place]);
+            goalVector.clear();
+            std::cout << "\b\b\b\b\b";//delete current progress in progress bar
+            percent_readed = ((double)i) / needToRead * 100;//recalculate progress level
+            //std::cout << percent_readed << '\n';//debug
         }
+        std::cout << "\b\b\b\b\b\b\b\b\b\b\b";//delete phrase for progrress bar
     }
+}
+
+/*
+This function receive array of CulturalObjects and std::vector of map collections.
+Then it fills map collections with pairs of key and value, when
+key is a word of CulturalObject field (words, contained in name, description,
+adress and historical reference)
+and value is a vector of pointers to the CulturalObject, which contain this word.
+Each collection in this vector respond to the certain field of CulturalObject
+*/
+
+void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map<std::string, std::vector<CulturalObject *>>> & Fields) {
+    unsigned percent_readed = 0;//variable for progress bar
+    std::cout << "Progress = ";//phrase for progress bar
+    for (unsigned i = 0; i < size; i++) {//read CulturalObjects from 0 to (size-1)
+        std::cout.setf(std::ios::fixed);//set the fixed width of printiong field
+        std::cout << std::setw(3) << percent_readed << std::setw(1) << "%";//printing to progress bar
+        std::cout.unsetf(std::ios::fixed);
+        std::string temp;
+        std::vector<std::string> splittedFields;
+        temp = objects[i].getName();
+        splittedFields.clear();
+        if (temp != EMPTY) {
+            readLineToArray(temp, splittedFields, ' ');
+            fillMultimap(splittedFields, Fields[0], &objects[i]);
+        }
+        temp = objects[i].getAddress();
+        splittedFields.clear();
+        if (temp != EMPTY) {
+            readLineToArray(temp, splittedFields, ' ');
+            fillMultimap(splittedFields, Fields[1], &objects[i]);
+        }
+        temp = objects[i].getDescription();
+        splittedFields.clear();
+        if (temp != EMPTY) {
+            readLineToArray(temp, splittedFields, ' ');
+            fillMultimap(splittedFields, Fields[2], &objects[i]);
+        }
+        temp = objects[i].getHistRef();
+        splittedFields.clear();
+        if (temp != EMPTY) {
+            readLineToArray(temp, splittedFields, ' ');
+            fillMultimap(splittedFields, Fields[3], &objects[i]);
+        }
+        percent_readed = ((double)i) / size * 100;
+        //std::cout << percent_readed << '\n';//debug
+        std::cout << "\b\b\b\b\b";//delete current progress in progress bar
+   }
+   std::cout << "\b\b\b\b\b\b\b\b\b\b\b";//delete phrase for progrress bar
 }

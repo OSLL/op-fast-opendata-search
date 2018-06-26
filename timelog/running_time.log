@@ -1,0 +1,124 @@
+Текущая дата и время:
+Вс июн 24 11:36:45 MSK 2018
+Анализ поиска в разных режимах
+
+-search , query is памятник, attempt #1
+0.08user 0.00system 0:00.09elapsed 100%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is памятник, attempt #1
+0.08user 0.01system 0:00.09elapsed 98%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+594minor)pagefaults 0swaps
+
+-search , query is памятник, attempt #2
+0.05user 0.00system 0:00.05elapsed 100%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+182minor)pagefaults 0swaps
+
+-complexsearch , query is памятник, attempt #2
+0.19user 0.00system 0:00.20elapsed 100%CPU (0avgtext+0avgdata 5020maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
+-search , query is памятник, attempt #3
+0.04user 0.00system 0:00.04elapsed 100%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+182minor)pagefaults 0swaps
+
+-complexsearch , query is памятник, attempt #3
+0.08user 0.00system 0:00.08elapsed 98%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+593minor)pagefaults 0swaps
+
+-search , query is памятник, attempt #4
+0.06user 0.00system 0:00.07elapsed 100%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+184minor)pagefaults 0swaps
+
+-complexsearch , query is памятник, attempt #4
+0.08user 0.00system 0:00.09elapsed 97%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+593minor)pagefaults 0swaps
+
+-search , query is памятник, attempt #5
+0.05user 0.00system 0:00.05elapsed 100%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+182minor)pagefaults 0swaps
+
+-complexsearch , query is памятник, attempt #5
+0.08user 0.00system 0:00.09elapsed 90%CPU (0avgtext+0avgdata 5020maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
+-search , query is дворец, attempt #1
+0.05user 0.00system 0:00.06elapsed 98%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is дворец, attempt #1
+0.08user 0.00system 0:00.10elapsed 91%CPU (0avgtext+0avgdata 5020maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
+-search , query is дворец, attempt #2
+0.05user 0.00system 0:00.05elapsed 100%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is дворец, attempt #2
+0.10user 0.00system 0:00.10elapsed 99%CPU (0avgtext+0avgdata 5020maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
+-search , query is дворец, attempt #3
+0.08user 0.01system 0:00.09elapsed 98%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+184minor)pagefaults 0swaps
+
+-complexsearch , query is дворец, attempt #3
+0.07user 0.00system 0:00.08elapsed 97%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+593minor)pagefaults 0swaps
+
+-search , query is дворец, attempt #4
+0.05user 0.00system 0:00.05elapsed 100%CPU (0avgtext+0avgdata 3412maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is дворец, attempt #4
+0.09user 0.00system 0:00.10elapsed 99%CPU (0avgtext+0avgdata 5020maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
+-search , query is дворец, attempt #5
+0.06user 0.00system 0:00.07elapsed 98%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+184minor)pagefaults 0swaps
+
+-complexsearch , query is дворец, attempt #5
+0.09user 0.00system 0:00.10elapsed 98%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+593minor)pagefaults 0swaps
+
+-search , query is Дворец, attempt #1
+0.06user 0.00system 0:00.06elapsed 100%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is Дворец, attempt #1
+0.08user 0.00system 0:00.09elapsed 98%CPU (0avgtext+0avgdata 5020maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
+-search , query is Дворец, attempt #2
+0.05user 0.00system 0:00.05elapsed 100%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is Дворец, attempt #2
+0.10user 0.01system 0:00.11elapsed 99%CPU (0avgtext+0avgdata 4812maxresident)k
+0inputs+0outputs (0major+593minor)pagefaults 0swaps
+
+-search , query is Дворец, attempt #3
+0.08user 0.00system 0:00.08elapsed 98%CPU (0avgtext+0avgdata 3416maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is Дворец, attempt #3
+0.07user 0.01system 0:00.09elapsed 97%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+593minor)pagefaults 0swaps
+
+-search , query is Дворец, attempt #4
+0.06user 0.00system 0:00.06elapsed 100%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is Дворец, attempt #4
+0.09user 0.00system 0:00.09elapsed 100%CPU (0avgtext+0avgdata 4804maxresident)k
+0inputs+0outputs (0major+594minor)pagefaults 0swaps
+
+-search , query is Дворец, attempt #5
+0.04user 0.00system 0:00.05elapsed 98%CPU (0avgtext+0avgdata 3456maxresident)k
+0inputs+0outputs (0major+183minor)pagefaults 0swaps
+
+-complexsearch , query is Дворец, attempt #5
+0.10user 0.00system 0:00.10elapsed 99%CPU (0avgtext+0avgdata 4808maxresident)k
+0inputs+0outputs (0major+595minor)pagefaults 0swaps
+
