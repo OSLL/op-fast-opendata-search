@@ -54,8 +54,9 @@ void FunctionChoice (Arguments &args) {
                     std::vector<std::string> toFind;
                     std::cout << "Now convert CulturalObjects to collections of map, ";//static element of progress bar
                     readLineToArray(args.toFind, toFind, ' ');
-                    std::cout << '\r' << std::flush;//clear the static line
+                    std::cout << std::flush << '\r';//clear the static line
                     complexSearch(fields, toFind);
+                    fields.clear();
                 }
                 if (args.search) {
                     search(objects, args.toFind, numberOfObjects);
@@ -73,7 +74,7 @@ void FunctionChoice (Arguments &args) {
                     objects = new CulturalObject[size];
                     std::cout << "Reading file with limit, ";//static line of progress bar
                     parser(in, objects, size, skip);//every time parser read the file it returns progress bar line in cout
-                    std::cout << '\r' << std::flush;//clear this line
+                    std::cout << std::flush << '\r';//clear this line
                     if (args.search) {
                         search(objects, args.toFind, size);
                     }

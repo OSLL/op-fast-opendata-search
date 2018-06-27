@@ -14,12 +14,16 @@ will be founded only in name field, only name of object will be printed).
 
 void search(CulturalObject objects[], std::string toFind, unsigned size) {
     bool nameMatch = false;
+    bool addressMatch = false;
     bool descrMatch = false;
     bool histMatch = false;
     for (unsigned i = 0; i < size && objects[i].checkId(); i++) {
         //Firstable we will find in which fields we have matches
         if (objects[i].getName().find(toFind) != std::string::npos) {
             nameMatch = true;
+        }
+        if (objects[i].getAddress().find(toFind) != std::string::npos) {
+            addressMatch = true;
         }
         if (objects[i].getDescription().find(toFind) != std::string::npos) {
             descrMatch = true;
@@ -32,13 +36,15 @@ void search(CulturalObject objects[], std::string toFind, unsigned size) {
         if (nameMatch || descrMatch || histMatch) {
             //print name in any case:
             std::cout << "Object, id #"<< objects[i].getId() << ": " << objects[i].getName();
+            if (addressMatch)
+                std::cout << '\n' << objects[i].getAddress();
             if (descrMatch)
                 std::cout << '\n' << objects[i].getDescription();
             if (histMatch)
                 std::cout << '\n' << objects[i].getHistRef();
             std::cout << std::endl;
         }
-        nameMatch = descrMatch = histMatch = false;
+        nameMatch = addressMatch = descrMatch = histMatch = false;
     }
 }
 
