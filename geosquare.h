@@ -6,11 +6,11 @@
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ░░██████████████████████████░░
 ░░██░░░░░░██░░░░░░██░░░░░░██░░
-░░██░░00░░██░░01░░██░░02░░██░░
+░░██░░10░░██░░11░░██░░12░░██░░
 ░░██░░░░░░██░░░░░░██░░░░░░██░░
 ░░██████████████████████████░░
 ░░██░░░░░░██░░░░░░██░░░░░░██░░
-░░██░░10░░██░░11░░██░░12░░██░░
+░░██░░00░░██░░01░░██░░02░░██░░
 ░░██░░░░░░██░░░░░░██░░░░░░██░░
 ░░██████████████████████████░░
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -33,6 +33,7 @@ class GeoSquares {
     Point firstCoordinate;
     Point lastCoordinate;
     double squareSize;
+    
 public:
     /*
      * This constructor receive first left and last right coordinates
@@ -47,18 +48,62 @@ public:
         int widthNumber = (int)((width/size) + 0.99);//we need one more square to fill all the city
         int heightNumber = (int)((height/size) + 0.99);//we need one more square to fill all the city
         squares.reserve(widthNumber);//set the width of geosquare
-        for (unsigned i = 0; i < heightNumber; i++) {
+        for (unsigned i = 0; i < widthNumber; i++) {
             squares.at(i).reserve(heightNumber);//set the height of geosquare
         }
         std::cout << "Test of correct behavior in constructor of GeoSquare:";//debug
         std::cout << "\nWidth = " << width << ", width Number = " << widthNumber;//debug
-        std::cout << "heigth = " << height << ", number = " << heightNumber << '\n';//debug
+        std::cout << "\nHeigth = " << height << ", number = " << heightNumber << '\n';//debug
     }
-    std::vector<CulturalObject *> returnSquare(Point findInWhichSquare) {
-        //if not in range return null else count right square and return it
-        //calling function may fill vector with objects
+    
+    /*
+     * After constructing object must be filled with CulturalObjects,
+     * but because Saint Petersburg located in North hemisphere, objects
+     * will be filled from lower left coordinate to upper left and from 
+     * left coordinate to right.
+     */
+    
+    std::vector<CulturalObject *> & returnSquare(Point findInWhichSquare) {
+        if (findInWhichSquare.getLatitude() > firstCoordinate.getLatitude() ||
+                findInWhichSquare.getLatitude() < lastCoordinate.getLatitude() ||
+                findInWhichSquare.getLongitude() < firstCoordinate.getLongitude() ||
+                findInWhichSquare.getLongitude() > lastCoordinate.getLongitude() ) {
+            /*return __null*/;
+        }
+        //find quadrante by the latitude:
+        double widthDistance = findInWhichSquare.getDistance(Point(firstCoordinate.getLatitude(),
+                            findInWhichSquare.getLongitude()));
+        int whichWidth = (int) (widthDistance / squareSize + 0.99) - 1;
+        
+        //find quadrante by the longitude:
+        double heightDistance = findInWhichSquare.getDistance(Point(findInWhichSquare.getLatitude(),
+                            firstCoordinate.getLongitude()));
+        int whichHeigth = (int) (heightDistance / squareSize + 0.99) - 1;
+        
+        return squares.at(whichWidth).at(whichHeigth);
     }
+    /*
+     * this function returns redunant vector of squares
+     */
+    
     std::vector<std::vector<CulturalObject *>> returnSquares(Point center, double radius) {
+        std::vector<std::vector<CulturalObject *>> toReturn;
+        std::vector<CulturalObject *> central = this->returnSquare(center);
+        toReturn.push_back(central);
+        //add indexes for central quadrante:
+        int WidthPosition = 0;
+        int HeigthPosition = 0;
+        //find indexes of central quadrante:
+        for (unsigned i = 0; i < squares.size(); i++){
+            for (unsigned j = 0; j < squares.at(i).size(); j++) {
+                if (squares.at(i).at(j) == central) {
+                    WidthPosition = j;
+                    HeigthPosition = i;
+                }
+            }
+        }
+        
         //return vector of squares which are in the radius
+        return toReturn;
     }
 };

@@ -168,9 +168,9 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
         }
         std::vector<std::string> goalVector;
         for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
-            //if (i % 10 == 0) {
-                printf("%3d%%", percent_readed);
-            //}
+            if (i % 10 == 0) {
+                printf("Procent readed: %3d%%", percent_readed);
+            }
             ifstr.sync();
             getline(ifstr, tempLine);
             std::string goalLine = tempLine;
@@ -197,10 +197,11 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
             objects[i].setDescription(goalVector[description_place]);
             objects[i].setHistRef(goalVector[histRef_place]);
             goalVector.clear();
-            //if (i % 10 == 0) {
-                printf("\b\b\b\b");//delete current progress in progress bar
+            if (i % 10 == 0) {
+                std::cout << '\r' << std::flush;//delete current progress in progress bar
                 percent_readed = ((double)i) / needToRead * 100;//recalculate progress level
-            //}
+            }
+            std::cout << '\r' << std::flush;
         }
     }
 }
@@ -215,11 +216,7 @@ Each collection in this vector respond to the certain field of CulturalObject
 */
 
 void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map<std::string, std::vector<CulturalObject *>>> & Fields) {
-    unsigned percent_readed = 0;//variable for progress bar
     for (unsigned i = 0; i < size; i++) {//read CulturalObjects from 0 to (size-1)
-        //if (i % 10 == 0) {
-            printf("%3d%%", percent_readed);
-        //}
         std::string temp;
         std::vector<std::string> splittedFields;
         temp = objects[i].getName();
@@ -246,9 +243,5 @@ void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map
             readLineToArray(temp, splittedFields, ' ');
             fillMultimap(splittedFields, Fields[3], &objects[i]);
         }
-        //if (i % 10 == 0) {
-            printf("\b\b\b\b");//delete current progress in progress bar
-            percent_readed = ((double)i) / size * 100;
-        //}
    }
 }

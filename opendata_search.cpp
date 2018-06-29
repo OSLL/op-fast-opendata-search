@@ -45,14 +45,14 @@ void FunctionChoice (Arguments &args) {
             CulturalObject * objects;
             if (args.limit == 0) {
                 objects = new CulturalObject[numberOfObjects];
-                std::cout << "Now reading a file: " << args.Filename << ". ";//static element of progress bar
+                std::cout << "Now reading a file: " << args.Filename << ".\n";//static element of progress bar
                 parser(in, objects, numberOfObjects);//fill array of objects, while parser read the file it returns progress bar in cout
-                std::cout << '\r' << std::flush;//clear this line
+                //std::cout << '\r' << std::flush;//clear this line
                 if (args.complexsearch) {
                     std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields(NUM_OF_FIELDS);
                     objectsToMap(objects, numberOfObjects, fields);
                     std::vector<std::string> toFind;
-                    std::cout << "Now convert CulturalObjects to collections of map, ";//static element of progress bar
+                    std::cout << "Now convert CulturalObjects to collections of map.";//static element of progress bar
                     readLineToArray(args.toFind, toFind, ' ');
                     std::cout << std::flush << '\r';//clear the static line
                     complexSearch(fields, toFind);
