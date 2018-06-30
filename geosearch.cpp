@@ -37,8 +37,8 @@ void geosearch(CulturalObject objects[], unsigned size, Point location, double r
 void complexgeosearch(CulturalObject objects[], unsigned size, Point location, double radius) {
     //First part of this function must be in another initializing function
     //firstable we need to make map of Saint-Petersburg
-    Point LeftUpper = Point(60.098284, 29.614316);//Пересечение границ Парголово(север) и Крноштадта(запад)
-    Point RightLower = Point(59.712012, 30.67999);//Пушкин (юг) и Колпино (Восток)
+    Point LeftUpper = Point(60.098284, 29.614316);//Пересечение границ Парголово(север) и Кронштадта(запад)
+    Point RightLower = Point(59.712012, 30.67999);//Пушкин (юг) и Колпино (восток)
     GeoSquares SaintPetersburg = GeoSquares(LeftUpper, RightLower, 1000);//территория разбита на квадраты по 150 метров
     for (unsigned i = 0; i < size; i++) {
         if (!(objects[i].checkId())) {
