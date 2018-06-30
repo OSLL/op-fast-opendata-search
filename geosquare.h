@@ -26,13 +26,17 @@
  *   |
  *  \ /
  * match to latitude coordinates.
- * As representation is 2d-vector so each square 
+ * 
+ * PLEASE PAY ATTENTION!
+ * This class is specified for CUlturalObjects which are situated
+ * in the Northwestern hemisphere!
  */
 class GeoSquares {
     std::vector<std::vector<std::vector<CulturalObject *>>> squares;
     Point firstCoordinate;
     Point lastCoordinate;
     double squareSize;
+    //std::vector<CulturalObject *> outOfRange;
     
 public:
     /*
@@ -43,13 +47,16 @@ public:
      */
     GeoSquares(Point leftUpper, Point rightLower, double size) : 
     firstCoordinate(leftUpper), lastCoordinate(rightLower), squareSize(size) {
+        std::cout << "Inside constructor\n";//debug
         double width = leftUpper.getDistance(Point(rightLower.getLatitude(), leftUpper.getLongitude()));
         double height = leftUpper.getDistance(Point(leftUpper.getLatitude(), rightLower.getLongitude()));
         int widthNumber = (int)((width/size) + 0.99);//we need one more square to fill all the city
         int heightNumber = (int)((height/size) + 0.99);//we need one more square to fill all the city
-        squares.reserve(widthNumber);//set the width of geosquare
+        std::cout << "ширина: "<< width << " height: " << height << " wN " << widthNumber << " hN " << heightNumber;//debug
+        squares.resize(widthNumber);//set the width of geosquare
+        std::cout << '\n'<< squares.size() << '\n';//debug
         for (unsigned i = 0; i < widthNumber; i++) {
-            squares.at(i).reserve(heightNumber);//set the height of geosquare
+            squares.at(i).resize(heightNumber);//set the height of geosquare
         }
         std::cout << "Test of correct behavior in constructor of GeoSquare:";//debug
         std::cout << "\nWidth = " << width << ", width Number = " << widthNumber;//debug
@@ -64,12 +71,12 @@ public:
      */
     
     std::vector<CulturalObject *> & returnSquare(Point findInWhichSquare) {
-        if (findInWhichSquare.getLatitude() > firstCoordinate.getLatitude() ||
+        /*if (findInWhichSquare.getLatitude() > firstCoordinate.getLatitude() ||
                 findInWhichSquare.getLatitude() < lastCoordinate.getLatitude() ||
                 findInWhichSquare.getLongitude() < firstCoordinate.getLongitude() ||
                 findInWhichSquare.getLongitude() > lastCoordinate.getLongitude() ) {
-            /*return __null*/;
-        }
+            return outOfRange;
+        }*/
         //find quadrante by the latitude:
         double widthDistance = findInWhichSquare.getDistance(Point(firstCoordinate.getLatitude(),
                             findInWhichSquare.getLongitude()));
@@ -79,6 +86,7 @@ public:
         double heightDistance = findInWhichSquare.getDistance(Point(findInWhichSquare.getLatitude(),
                             firstCoordinate.getLongitude()));
         int whichHeigth = (int) (heightDistance / squareSize + 0.99) - 1;
+        std::cout << "Finded object in the: " << whichWidth << " " << whichHeigth << '\n';//debug
         
         return squares.at(whichWidth).at(whichHeigth);
     }

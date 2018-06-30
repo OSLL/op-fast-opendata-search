@@ -10,6 +10,7 @@
 #include "objectcounter.h"
 #include "search.h"
 #include "geosearch.h"
+#include "geosquare.h"//test
 
 #define MUSEUMS "./data/data-museums.csv"
 #define SIGHTS "./data/data-sights.csv"
@@ -36,6 +37,14 @@ struct Arguments {
 void FunctionChoice (Arguments &args) {
     std::ifstream in(args.Filename);
     if (in.is_open()) {
+        /*test of geosquare*/
+        std::cout << "Go to geosquare constructor";
+        Point LeftUpper = Point(60.095495, 29.670435);
+        Point RightLower = Point(59.743519,30.586249);
+        std::cout << "Test - distance between corners is " << LeftUpper.getDistance(RightLower);
+        GeoSquares City = GeoSquares(LeftUpper, RightLower, 500);//debug
+        std::vector<CulturalObject *> testObject = City.returnSquare(Point(60,30));//debug
+        /*end of test*/
         std::cout << "Reading number of objects";//static element of progress bar
         int numberOfObjects = ObjectCounter(in);
         std::cout << '\r' << std::flush;//clear the first line
@@ -45,7 +54,7 @@ void FunctionChoice (Arguments &args) {
             CulturalObject * objects;
             if (args.limit == 0) {
                 objects = new CulturalObject[numberOfObjects];
-                std::cout << "Now reading a file: " << args.Filename << ".\n";//static element of progress bar
+                std::cout << "Now reading a file: " << args.Filename << ".";//static element of progress bar
                 parser(in, objects, numberOfObjects);//fill array of objects, while parser read the file it returns progress bar in cout
                 //std::cout << '\r' << std::flush;//clear this line
                 if (args.complexsearch) {

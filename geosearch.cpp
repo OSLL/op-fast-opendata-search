@@ -17,16 +17,16 @@ void geosearch(CulturalObject objects[], unsigned size, Point location, double r
              continue;
          }
          if (!objects[i].haveCoordinates()) {
-             std::cout << "Object #" << (i + 1) << "without coordinates! Name = ";
-             std::cout << objects[i].getName() << std::endl;
+             //std::cout << "Object #" << (i + 1) << "without coordinates! Name = ";
+             //std::cout << objects[i].getName() << std::endl;
          }
-         else if (double distance = objects[i].getPoint().getDistance(location) <= radius) {
+         else if (objects[i].getPoint().getDistance(location) <= radius) {
              std::cout << "Object id #" << objects[i].getId() << " near.\nName = ";
              std::cout << objects[i].getName() << "\nAddress is: " << objects[i].getAddress();
              //std::cout << ",\nlongitude = " << objects[i].getLongitude();
              //std::cout << ",\nlatitude = " << objects[i].getLatitude();
              std::cout << "\nDistance to the object is ";
-             std::cout << distance << " meters\n"; 
+             std::cout << objects[i].getPoint().getDistance(location) << " meters\n"; 
          }
      }
 }
