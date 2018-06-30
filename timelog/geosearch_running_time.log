@@ -1,0 +1,76 @@
+Текущая дата и время:
+Сб июн 30 23:56:16 MSK 2018
+Анализ сложного геопоиска
+
+-complexgeosearch , query is 59.938630, 30.314130, 1, attempt #1
+0.24user 0.00system 0:00.25elapsed 99%CPU (0avgtext+0avgdata 4520maxresident)k
+0inputs+0outputs (0major+362minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 1, attempt #2
+0.23user 0.00system 0:00.24elapsed 99%CPU (0avgtext+0avgdata 4872maxresident)k
+0inputs+0outputs (0major+365minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 1, attempt #3
+0.22user 0.00system 0:00.22elapsed 100%CPU (0avgtext+0avgdata 4516maxresident)k
+0inputs+0outputs (0major+361minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 100, attempt #1
+0.30user 0.00system 0:00.30elapsed 99%CPU (0avgtext+0avgdata 4560maxresident)k
+0inputs+0outputs (0major+376minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 100, attempt #2
+0.28user 0.00system 0:00.28elapsed 99%CPU (0avgtext+0avgdata 4560maxresident)k
+0inputs+0outputs (0major+376minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 100, attempt #3
+0.28user 0.00system 0:00.28elapsed 99%CPU (0avgtext+0avgdata 4916maxresident)k
+0inputs+0outputs (0major+379minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 500, attempt #1
+0.28user 0.00system 0:00.29elapsed 99%CPU (0avgtext+0avgdata 4876maxresident)k
+0inputs+0outputs (0major+380minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 500, attempt #2
+0.22user 0.00system 0:00.23elapsed 99%CPU (0avgtext+0avgdata 4612maxresident)k
+0inputs+0outputs (0major+378minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 500, attempt #3
+0.23user 0.00system 0:00.24elapsed 100%CPU (0avgtext+0avgdata 4620maxresident)k
+0inputs+0outputs (0major+377minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 2500, attempt #1
+0.26user 0.00system 0:00.26elapsed 99%CPU (0avgtext+0avgdata 4624maxresident)k
+0inputs+0outputs (0major+379minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 2500, attempt #2
+0.24user 0.00system 0:00.24elapsed 99%CPU (0avgtext+0avgdata 4620maxresident)k
+0inputs+0outputs (0major+378minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 2500, attempt #3
+0.25user 0.00system 0:00.26elapsed 100%CPU (0avgtext+0avgdata 4620maxresident)k
+0inputs+0outputs (0major+378minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 5000, attempt #1
+0.24user 0.00system 0:00.25elapsed 99%CPU (0avgtext+0avgdata 4920maxresident)k
+0inputs+0outputs (0major+382minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 5000, attempt #2
+0.25user 0.01system 0:00.27elapsed 100%CPU (0avgtext+0avgdata 4624maxresident)k
+0inputs+0outputs (0major+380minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 5000, attempt #3
+0.25user 0.02system 0:00.27elapsed 99%CPU (0avgtext+0avgdata 4624maxresident)k
+0inputs+0outputs (0major+380minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 10000, attempt #1
+0.23user 0.01system 0:00.26elapsed 96%CPU (0avgtext+0avgdata 4916maxresident)k
+0inputs+0outputs (0major+390minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 10000, attempt #2
+0.25user 0.01system 0:00.26elapsed 98%CPU (0avgtext+0avgdata 4916maxresident)k
+0inputs+0outputs (0major+390minor)pagefaults 0swaps
+
+-complexgeosearch , query is 59.938630, 30.314130, 10000, attempt #3
+0.28user 0.00system 0:00.28elapsed 100%CPU (0avgtext+0avgdata 4916maxresident)k
+0inputs+0outputs (0major+390minor)pagefaults 0swaps
+

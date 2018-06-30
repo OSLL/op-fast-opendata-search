@@ -22,13 +22,14 @@ struct Arguments {
     bool search;
     bool geosearch;
     bool complexsearch;
+    bool complexgeosearch;
     std::string toFind;
     unsigned limit;
     Point coordinates;
     double radius;
     Arguments() {
         Filename = toFind = NO_FILE_NAME;
-        search = geosearch = complexsearch = false;
+        search = geosearch = complexsearch = complexgeosearch = false;
         limit = 0U;
         radius = 0.0;
     }
@@ -37,14 +38,6 @@ struct Arguments {
 void FunctionChoice (Arguments &args) {
     std::ifstream in(args.Filename);
     if (in.is_open()) {
-        /*test of geosquare*/
-        std::cout << "Go to geosquare constructor";
-        Point LeftUpper = Point(60.095495, 29.670435);
-        Point RightLower = Point(59.743519,30.586249);
-        std::cout << "Test - distance between corners is " << LeftUpper.getDistance(RightLower);
-        GeoSquares City = GeoSquares(LeftUpper, RightLower, 500);//debug
-        std::vector<CulturalObject *> testObject = City.returnSquare(Point(60,30));//debug
-        /*end of test*/
         std::cout << "Reading number of objects";//static element of progress bar
         int numberOfObjects = ObjectCounter(in);
         std::cout << '\r' << std::flush;//clear the first line
@@ -56,7 +49,7 @@ void FunctionChoice (Arguments &args) {
                 objects = new CulturalObject[numberOfObjects];
                 std::cout << "Now reading a file: " << args.Filename << ".";//static element of progress bar
                 parser(in, objects, numberOfObjects);//fill array of objects, while parser read the file it returns progress bar in cout
-                //std::cout << '\r' << std::flush;//clear this line
+                std::cout << '\r' << std::flush;//clear this line
                 if (args.complexsearch) {
                     std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields(NUM_OF_FIELDS);
                     objectsToMap(objects, numberOfObjects, fields);
@@ -72,6 +65,9 @@ void FunctionChoice (Arguments &args) {
                 }
                 if (args.geosearch) {
                     geosearch(objects, numberOfObjects, args.coordinates, args.radius);
+                }
+                if (args.complexgeosearch) {
+                    complexgeosearch(objects, numberOfObjects, args.coordinates, args.radius);
                 }
                 delete [] objects;     
             }
@@ -122,14 +118,14 @@ int main(int argc, char* argv[]) {
     Arguments args;
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
-        if (arg == "-file") {
+        if (arg == "-file" || arg == "--file") {
             args.Filename = (std::string) argv [++i];
         }
-        if (arg == "-search") {
+        if (arg == "-search" || arg == "--search") {
             args.search = true;
             args.toFind = (std::string) argv[++i];
         }
-        if (arg == "-geosearch") {
+        if ((arg == "-geosearch") || (arg == "--geosearch")) {
             args.geosearch = true;
             std::string query = (std::string) argv[++i];
             std::vector<std::string> coordsWithRadius;
@@ -164,7 +160,43 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-        if ((arg == "-limit") && !args.complexsearch) {
+        if ((arg == "-complexgeosearch") || (arg == "--complexgeosearch")) {
+            args.complexgeosearch = true;
+            args.geosearch = false;
+            std::string query = (std::string) argv[++i];
+            std::vector<std::string> coordsWithRadius;
+            std::string temp;
+            for (int i = 0; i < query.length(); i++) {
+                if (query.at(i) == ',') {
+                    coordsWithRadius.push_back(temp);
+                    temp.clear();
+                }
+                else {
+                    temp += query.at(i);
+                }
+            }
+            coordsWithRadius.push_back(temp);
+            temp.clear();
+            if (coordsWithRadius.size() != 3) {
+                args.complexgeosearch = false;
+                std::cout << "Something wrong with complex geosearch query.\n";
+                std::cout << "Using: ./opendata_search.out -complexgeosearch xx.xxxx,yy.yyyy,radius(in meters)\n";
+            }
+            else {
+                try {
+                    args.coordinates = Point(std::stod(coordsWithRadius[0]),
+                                             std::stod(coordsWithRadius[1]));  
+                args.radius = std::stod(coordsWithRadius[2]);
+                }
+                catch (std::exception& ia) {
+                    args.complexgeosearch = false;
+                    std::cout << "Cannot recognize coordinates or radius!\n";
+                    std::cout << "Using: ./opendata_search.out"; 
+                    std::cout << "-complexgeosearch xx.xxxx,yy.yyyy,radius(in meters)\n";
+                }
+            }
+        }
+        if ((arg == "-limit" || arg == "--limit") && !args.complexsearch && !args.complexgeosearch) {
             args.limit = atoi(argv[++i]);
             if (args.limit < 0) {
                 args.limit = 0;
@@ -173,7 +205,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "!App will now work without limit, use system shortcuts to stop it!\n";
             }
         }
-        if (arg == "-complexsearch") {
+        if (arg == "-complexsearch" || arg == "--complexsearch") {
             args.complexsearch = true;
             args.search = false;
             args.limit = 0;
