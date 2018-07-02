@@ -7,9 +7,10 @@
 #include "culturalobject.h"
 #include "parser.h"
 #include <iomanip>
+#include <cstdio>
 
 #define LOCALE_EN "_en"
-#define LOCALE_RU "" //this is default locale for this program
+#define LOCALE_RU "" /*this is default locale for this program*/
 #define ID "oid"
 #define NAME "name"
 #define ADDRESS "addressline"
@@ -65,6 +66,7 @@ bool readLineToArray (std::string & line, std::vector<std::string> & array, char
             continue;
         }
         if (line[i] == delim && outline) {
+            //std::cout << "readed line is " << temp << '\n';//debug
             array.push_back(temp);
             temp.clear();
         }
@@ -72,9 +74,10 @@ bool readLineToArray (std::string & line, std::vector<std::string> & array, char
             temp += line[i];
         } 
     }
-    if (delim == '.') {
+    if (delim == ',') {
         temp.pop_back(); //remove last symbol from the last element
     }
+    //std::cout << "readed last line is " << temp << '\n';//debug
     array.push_back(temp); //write the last element
     return outline; //if outline, string readed successfully, or we need to add information in it
 }
@@ -99,7 +102,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
     unsigned address_place = 0;
     unsigned description_place = 0;
     unsigned histRef_place = 0;
-    unsigned percent_readed = 0;//yhis variable using in progress bar
+    unsigned percent_readed = 0;//this variable using in progress bar
     
     if (ifstr.is_open()) {
         /*lets read first line and assign each value
@@ -110,7 +113,13 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
         std::vector<std::string> sequenceOfElements;
         readLineToArray (firstLine, sequenceOfElements);
         for (unsigned i = 0; i < sequenceOfElements.size(); i++) {
-            std::string temp = sequenceOfElements[i];
+            std::string temp = sequenceOfElements.at(i);
+            /*std::cout << "String is " << temp << '\n' << "print places " << '\n';//debug
+            std::cout << "ID is " << ID;//debug
+            std::cout << "temp.compare(ID) = " << temp.compare(ID) << '\n';//debug
+            std::cout << "temp compare with itself " << temp.compare(temp) << '\n';//debug
+            std::cout << "tem.compare(LONG) = " <<  temp.compare(LONG) << '\n';//debug
+            std::cout << "test of strcmp: " << strcmp(temp.c_str(), ID) << '\n';//debug*/
             if (temp.compare(ID) == 0) {
                 id_place = i;
             }
@@ -131,6 +140,7 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
             }
             else if (temp.compare(HISTREF) == 0) {
                 histRef_place = i;
+                //std::cout << i << '\n';//debug
             }
         }
         if (!(name_place && address_place && lat_place && long_place
@@ -157,11 +167,10 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
             }//skip unnecessary lines
         }
         std::vector<std::string> goalVector;
-        std::cout << "Progress = ";//phrase for progress bar
         for (unsigned i = 0; i < needToRead && !ifstr.eof(); i++) {
-            std::cout.setf(std::ios::fixed);//set the fixed width of printiong field
-            std::cout << std::setw(3) << percent_readed << std::setw(1) << "%";//printing to progress bar
-            std::cout.unsetf(std::ios::fixed);
+            if (i % 10 == 0) {
+                printf("Procent readed: %3d%%", percent_readed);
+            }
             ifstr.sync();
             getline(ifstr, tempLine);
             std::string goalLine = tempLine;
@@ -188,11 +197,12 @@ void parser(std::ifstream &ifstr, CulturalObject objects[],
             objects[i].setDescription(goalVector[description_place]);
             objects[i].setHistRef(goalVector[histRef_place]);
             goalVector.clear();
-            std::cout << "\b\b\b\b\b";//delete current progress in progress bar
-            percent_readed = ((double)i) / needToRead * 100;//recalculate progress level
-            //std::cout << percent_readed << '\n';//debug
+            if (i % 10 == 0) {
+                std::cout << '\r' << std::flush;//delete current progress in progress bar
+                percent_readed = ((double)i) / needToRead * 100;//recalculate progress level
+            }
+            std::cout << '\r' << std::flush;
         }
-        std::cout << "\b\b\b\b\b\b\b\b\b\b\b";//delete phrase for progrress bar
     }
 }
 
@@ -206,12 +216,7 @@ Each collection in this vector respond to the certain field of CulturalObject
 */
 
 void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map<std::string, std::vector<CulturalObject *>>> & Fields) {
-    unsigned percent_readed = 0;//variable for progress bar
-    std::cout << "Progress = ";//phrase for progress bar
     for (unsigned i = 0; i < size; i++) {//read CulturalObjects from 0 to (size-1)
-        std::cout.setf(std::ios::fixed);//set the fixed width of printiong field
-        std::cout << std::setw(3) << percent_readed << std::setw(1) << "%";//printing to progress bar
-        std::cout.unsetf(std::ios::fixed);
         std::string temp;
         std::vector<std::string> splittedFields;
         temp = objects[i].getName();
@@ -238,9 +243,5 @@ void objectsToMap (CulturalObject objects[], unsigned size, std::vector<std::map
             readLineToArray(temp, splittedFields, ' ');
             fillMultimap(splittedFields, Fields[3], &objects[i]);
         }
-        percent_readed = ((double)i) / size * 100;
-        //std::cout << percent_readed << '\n';//debug
-        std::cout << "\b\b\b\b\b";//delete current progress in progress bar
    }
-   std::cout << "\b\b\b\b\b\b\b\b\b\b\b";//delete phrase for progrress bar
 }

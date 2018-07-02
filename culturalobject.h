@@ -28,7 +28,7 @@ class CulturalObject {
     std::string description;
     std::string histRef;
     public:
-        CulturalObject() {}
+        CulturalObject() {id = 0;}//without "id = 0" default constructor will be fill objects with garbage id's
         CulturalObject (unsigned id_, double lat_, double long_, std::string name_) : 
             name(name_), id(id_) {
                 coordinates = Point(lat_, long_);

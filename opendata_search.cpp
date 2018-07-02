@@ -10,6 +10,7 @@
 #include "objectcounter.h"
 #include "search.h"
 #include "geosearch.h"
+#include "geosquare.h"//test
 
 #define MUSEUMS "./data/data-museums.csv"
 #define SIGHTS "./data/data-sights.csv"
@@ -21,13 +22,14 @@ struct Arguments {
     bool search;
     bool geosearch;
     bool complexsearch;
+    bool complexgeosearch;
     std::string toFind;
     unsigned limit;
     Point coordinates;
     double radius;
     Arguments() {
         Filename = toFind = NO_FILE_NAME;
-        search = geosearch = complexsearch = false;
+        search = geosearch = complexsearch = complexgeosearch = false;
         limit = 0U;
         radius = 0.0;
     }
@@ -45,23 +47,27 @@ void FunctionChoice (Arguments &args) {
             CulturalObject * objects;
             if (args.limit == 0) {
                 objects = new CulturalObject[numberOfObjects];
-                std::cout << "Now reading a file: " << args.Filename << ". ";//static element of progress bar
+                std::cout << "Now reading a file: " << args.Filename << ".";//static element of progress bar
                 parser(in, objects, numberOfObjects);//fill array of objects, while parser read the file it returns progress bar in cout
                 std::cout << '\r' << std::flush;//clear this line
                 if (args.complexsearch) {
                     std::vector<std::map<std::string, std::vector<CulturalObject *>>> fields(NUM_OF_FIELDS);
                     objectsToMap(objects, numberOfObjects, fields);
                     std::vector<std::string> toFind;
-                    std::cout << "Now convert CulturalObjects to collections of map, ";//static element of progress bar
+                    std::cout << "Now convert CulturalObjects to collections of map.";//static element of progress bar
                     readLineToArray(args.toFind, toFind, ' ');
-                    std::cout << '\r' << std::flush;//clear the static line
+                    std::cout << std::flush << '\r';//clear the static line
                     complexSearch(fields, toFind);
+                    fields.clear();
                 }
                 if (args.search) {
                     search(objects, args.toFind, numberOfObjects);
                 }
                 if (args.geosearch) {
                     geosearch(objects, numberOfObjects, args.coordinates, args.radius);
+                }
+                if (args.complexgeosearch) {
+                    complexgeosearch(objects, numberOfObjects, args.coordinates, args.radius);
                 }
                 delete [] objects;     
             }
@@ -73,7 +79,7 @@ void FunctionChoice (Arguments &args) {
                     objects = new CulturalObject[size];
                     std::cout << "Reading file with limit, ";//static line of progress bar
                     parser(in, objects, size, skip);//every time parser read the file it returns progress bar line in cout
-                    std::cout << '\r' << std::flush;//clear this line
+                    std::cout << std::flush << '\r';//clear this line
                     if (args.search) {
                         search(objects, args.toFind, size);
                     }
@@ -112,14 +118,14 @@ int main(int argc, char* argv[]) {
     Arguments args;
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
-        if (arg == "-file") {
+        if (arg == "-file" || arg == "--file") {
             args.Filename = (std::string) argv [++i];
         }
-        if (arg == "-search") {
+        if (arg == "-search" || arg == "--search") {
             args.search = true;
             args.toFind = (std::string) argv[++i];
         }
-        if (arg == "-geosearch") {
+        if ((arg == "-geosearch") || (arg == "--geosearch")) {
             args.geosearch = true;
             std::string query = (std::string) argv[++i];
             std::vector<std::string> coordsWithRadius;
@@ -154,7 +160,43 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-        if ((arg == "-limit") && !args.complexsearch) {
+        if ((arg == "-complexgeosearch") || (arg == "--complexgeosearch")) {
+            args.complexgeosearch = true;
+            args.geosearch = false;
+            std::string query = (std::string) argv[++i];
+            std::vector<std::string> coordsWithRadius;
+            std::string temp;
+            for (int i = 0; i < query.length(); i++) {
+                if (query.at(i) == ',') {
+                    coordsWithRadius.push_back(temp);
+                    temp.clear();
+                }
+                else {
+                    temp += query.at(i);
+                }
+            }
+            coordsWithRadius.push_back(temp);
+            temp.clear();
+            if (coordsWithRadius.size() != 3) {
+                args.complexgeosearch = false;
+                std::cout << "Something wrong with complex geosearch query.\n";
+                std::cout << "Using: ./opendata_search.out -complexgeosearch xx.xxxx,yy.yyyy,radius(in meters)\n";
+            }
+            else {
+                try {
+                    args.coordinates = Point(std::stod(coordsWithRadius[0]),
+                                             std::stod(coordsWithRadius[1]));  
+                args.radius = std::stod(coordsWithRadius[2]);
+                }
+                catch (std::exception& ia) {
+                    args.complexgeosearch = false;
+                    std::cout << "Cannot recognize coordinates or radius!\n";
+                    std::cout << "Using: ./opendata_search.out"; 
+                    std::cout << "-complexgeosearch xx.xxxx,yy.yyyy,radius(in meters)\n";
+                }
+            }
+        }
+        if ((arg == "-limit" || arg == "--limit") && !args.complexsearch && !args.complexgeosearch) {
             args.limit = atoi(argv[++i]);
             if (args.limit < 0) {
                 args.limit = 0;
@@ -163,7 +205,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "!App will now work without limit, use system shortcuts to stop it!\n";
             }
         }
-        if (arg == "-complexsearch") {
+        if (arg == "-complexsearch" || arg == "--complexsearch") {
             args.complexsearch = true;
             args.search = false;
             args.limit = 0;
